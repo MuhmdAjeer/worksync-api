@@ -1,0 +1,80 @@
+import { Module } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { AuthModule } from './modules/auth.module';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import config from './mikro-orm.config';
+import { User } from './entities/User.entity';
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigService, ConfigModule } from '@nestjs/config';
+import { JwtStrategy } from './strategies/jwt.strategy';
+import { LocalStrategy } from './strategies/local.strategy';
+import { AuthService } from './services/auth.service';
+import { ClsModule } from 'nestjs-cls';
+import { OTP } from './entities/Otp.entity';
+import { UploadController } from './controllers/upload.controller';
+import { WorkspaceController } from './controllers/workspace.controller';
+import { ProjectsController } from './controllers/project.controller';
+import { UploadService } from './services/upload.service';
+import { WorkspaceService } from './services/workspace.service';
+import { ProjectService } from './services/project.service';
+import { Workspace } from './entities/Workspace.entity';
+import { WorkspaceMember } from './entities/WorkspaceMember.entity';
+import { Invitation } from './entities/Invitation.entity';
+import { FileUpload } from './entities/FileUpload.entity';
+import { MailService } from './services/mail.service';
+import { OnboardingController } from './controllers/onboarding.controller';
+import { OnboardingService } from './services/onboarding.service';
+import { Project } from './entities/Project.entity';
+
+@Module({
+  imports: [
+    AuthModule,
+    MikroOrmModule.forRoot(config),
+    MikroOrmModule.forFeature({
+      entities: [
+        User,
+        OTP,
+        Workspace,
+        WorkspaceMember,
+        Invitation,
+        FileUpload,
+        Project,
+      ],
+    }),
+    JwtModule.registerAsync({
+      global: true,
+      useFactory: (configService: ConfigService) => {
+        const tokenExpiry =
+          configService.get('NODE_ENV') === 'development' ? '100d' : '4h';
+        return {
+          secret: configService.getOrThrow('JWT_KEY'),
+          signOptions: { expiresIn: tokenExpiry },
+        };
+      },
+      inject: [ConfigService],
+      imports: [ConfigModule],
+    }),
+    ConfigModule.forRoot(),
+    ClsModule.forRoot({ middleware: { mount: true } }),
+  ],
+  controllers: [
+    AppController,
+    OnboardingController,
+    UploadController,
+    WorkspaceController,
+    ProjectsController,
+  ],
+  providers: [
+    AppService,
+    OnboardingService,
+    JwtStrategy,
+    LocalStrategy,
+    AuthService,
+    UploadService,
+    WorkspaceService,
+    ProjectService,
+    MailService,
+  ],
+})
+export class AppModule {}
