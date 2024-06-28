@@ -2,26 +2,28 @@ import {
   BeforeCreate,
   Collection,
   Entity,
+  EntityRepository,
   EntityRepositoryType,
   ManyToMany,
+  OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import * as bcrypt from 'bcrypt';
 import { Base } from './base.entity';
 import { Project } from './Project.entity';
+import { WorkspaceMember } from './WorkspaceMember.entity';
 
 @Entity({ repository: () => UserRepo, tableName: 'users' })
 export class User extends Base {
   [EntityRepositoryType]?: UserRepo;
 
-  @Property({ nullable: true })
+  @Property()
   username?: string;
 
   @Property({ unique: true })
   email: string;
 
-  @Property({ nullable: true, unique: true })
+  @Property({ unique: true })
   google_id?: string;
 
   @Property()
@@ -35,6 +37,9 @@ export class User extends Base {
 
   @ManyToMany(() => Project, (p) => p.members)
   projects = new Collection<Project>(this);
+
+  @OneToMany(() => WorkspaceMember, (workspaceMember) => workspaceMember.user)
+  workspaces = new Collection<WorkspaceMember>(this);
 
   @BeforeCreate()
   async hashPassword() {

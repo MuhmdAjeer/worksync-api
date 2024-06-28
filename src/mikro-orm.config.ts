@@ -1,7 +1,8 @@
 import { PostgreSqlDriver } from '@mikro-orm/postgresql';
-import { defineConfig } from '@mikro-orm/core';
+import { defineConfig, Platform, Type, TextType } from '@mikro-orm/core';
 import { Migrator, TSMigrationGenerator } from '@mikro-orm/migrations';
 import { SeedManager } from '@mikro-orm/seeder';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 export default defineConfig<PostgreSqlDriver>({
   dbName: 'auth_db',
@@ -13,6 +14,17 @@ export default defineConfig<PostgreSqlDriver>({
   debug: true,
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
+  metadataProvider: TsMorphMetadataProvider,
+  discovery: {
+    getMappedType(type: string, platform: Platform) {
+      if (type === 'string') {
+        return Type.getType(TextType);
+      }
+
+      return platform.getDefaultMappedType(type);
+    },
+  },
+
   migrations: {
     path: 'dist/migrations',
     pathTs: 'src/migrations',

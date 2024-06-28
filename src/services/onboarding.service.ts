@@ -5,6 +5,7 @@ import { Workspace, WorkspaceRepo } from 'src/entities/Workspace.entity';
 import { ClsService } from 'nestjs-cls';
 import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { MailService } from './mail.service';
+import { WorkspaceDto } from 'src/dtos/workspace.dto';
 @Injectable()
 export class OnboardingService {
   constructor(
@@ -15,7 +16,7 @@ export class OnboardingService {
     private mailSvc: MailService,
   ) {}
 
-  async onboardUser(onboardDto: OnboardDto) {
+  async onboardUser(onboardDto: OnboardDto): Promise<WorkspaceDto | null> {
     const user = this.clsService.get<User>('reqUser');
     const workspace = new Workspace({
       name: onboardDto.name,
@@ -26,7 +27,7 @@ export class OnboardingService {
     await this.workspaceRepo.getEntityManager().persistAndFlush(workspace);
 
     for (const member of onboardDto.members) {
-      if (member.email === user.email) return;
+      if (member.email === user.email) return null;
       const invitation = new Invitation({
         email: member.email,
         workspace_id: workspace.id,

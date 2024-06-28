@@ -19,7 +19,6 @@ async function bootstrap() {
   //   credentials: true,
   //   preflightContinue: true,
   // });
-
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Auth API')

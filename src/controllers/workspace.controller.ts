@@ -1,3 +1,4 @@
+import { Mapper } from '@automapper/core';
 import {
   Body,
   Controller,
@@ -6,8 +7,11 @@ import {
   Param,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
+import { ProjectDto } from 'src/dtos/project.dto';
+import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
 import { ProjectService } from 'src/services/project.service';
 import { WorkspaceService } from 'src/services/workspace.service';
@@ -31,9 +35,10 @@ export class WorkspaceController {
   async getWorkspaces() {
     return await this.workspaceService.getUserWorkspaces();
   }
+
   @Get('/:workspaceId/projects')
   async getWorkspaceProjects(@Param('workspaceId') id: string) {
-    return this.projectSvc.findProjectsByWorkspace(id);
+    return await this.projectSvc.findProjectsByWorkspace(id);
   }
   @Get('/users')
   async listUsers() {

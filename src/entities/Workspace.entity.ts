@@ -8,6 +8,7 @@ import {
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { Project } from './Project.entity';
 import { Base } from './base.entity';
+import { WorkspaceMember } from './WorkspaceMember.entity';
 
 @Entity({ repository: () => WorkspaceRepo })
 export class Workspace extends Base {
@@ -21,6 +22,12 @@ export class Workspace extends Base {
 
   @OneToMany(() => Project, (p) => p.workspace)
   projects = new Collection<Project>(this);
+
+  @OneToMany(
+    () => WorkspaceMember,
+    (workspaceMember) => workspaceMember.workspace,
+  )
+  members = new Collection<WorkspaceMember>(this);
 
   @Property()
   owner_id: string;

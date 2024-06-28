@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(decodedPayload: User): Promise<User> {
+  async validate(decodedPayload: User): Promise<User | null> {
     const user = await this.authSvc.findOne(decodedPayload.id);
     // if (user.deleted_at) {
     //   throw new UserDeletedException();

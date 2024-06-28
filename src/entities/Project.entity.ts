@@ -1,15 +1,21 @@
 import {
   Collection,
   Entity,
+  EntityRepository,
   EntityRepositoryType,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   Property,
 } from '@mikro-orm/core';
-import { EntityRepository } from '@mikro-orm/postgresql';
 import { Base } from './base.entity';
 import { Workspace } from './Workspace.entity';
 import { User } from './User.entity';
+import { Issue } from './Issue.entity';
+import { IssueLabel } from './IssueLabels.entity';
+import { IssueState } from './IssueState.entity';
+import { ApiProperty } from '@nestjs/swagger';
+import { createProjectDto } from 'src/dtos/project.dto';
 
 @Entity({ repository: () => ProjectRepo })
 export class Project extends Base {
@@ -27,6 +33,15 @@ export class Project extends Base {
   @ManyToOne(() => Workspace, { inversedBy: 'projects' })
   workspace: Workspace;
 
+  @OneToMany(() => Issue, (i) => i.Project)
+  issues = new Collection<Issue>(this);
+
+  @OneToMany(() => IssueState, (i) => i.project)
+  states = new Collection<IssueState>(this);
+
+  @OneToMany(() => IssueLabel, (i) => i.Project)
+  labels = new Collection<IssueLabel>(this);
+
   @ManyToOne(() => User)
   lead: User;
 
@@ -36,9 +51,6 @@ export class Project extends Base {
   @Property({ nullable: true, default: null })
   logo?: string;
 
-  // @ManyToMany(() => User, (user) => user.projects, {
-  //   pivotEntity: () => ProjectMember,
-  // })
   @ManyToMany({ entity: () => User })
   members = new Collection<User>(this);
   constructor(obj: Partial<Project>) {

@@ -40,8 +40,8 @@ export class UploadService {
       forcePathStyle: true,
       useGlobalEndpoint: true,
       credentials: {
-        accessKeyId: configService.get('AWS_ACCESS_KEY'),
-        secretAccessKey: configService.get('AWS_SECRET_KEY'),
+        accessKeyId: configService.getOrThrow('AWS_ACCESS_KEY'),
+        secretAccessKey: configService.getOrThrow('AWS_SECRET_KEY'),
       },
     };
 

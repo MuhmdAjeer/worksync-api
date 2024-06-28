@@ -26,6 +26,9 @@ import { MailService } from './services/mail.service';
 import { OnboardingController } from './controllers/onboarding.controller';
 import { OnboardingService } from './services/onboarding.service';
 import { Project } from './entities/Project.entity';
+import { Issue } from './entities/Issue.entity';
+import { IssueController } from './controllers/issue.controller';
+import { IssueService } from './services/issue.service';
 
 @Module({
   imports: [
@@ -40,8 +43,10 @@ import { Project } from './entities/Project.entity';
         Invitation,
         FileUpload,
         Project,
+        Issue,
       ],
     }),
+
     JwtModule.registerAsync({
       global: true,
       useFactory: (configService: ConfigService) => {
@@ -64,8 +69,10 @@ import { Project } from './entities/Project.entity';
     UploadController,
     WorkspaceController,
     ProjectsController,
+    IssueController,
   ],
   providers: [
+    IssueService,
     AppService,
     OnboardingService,
     JwtStrategy,

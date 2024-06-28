@@ -8,7 +8,7 @@ export class BaseDto {
   @ApiProperty()
   updated_at?: Date;
   @ApiProperty()
-  deleted_at?: Date;
+  deleted_at?: Date | null;
   @ApiProperty()
   version: number;
 }
