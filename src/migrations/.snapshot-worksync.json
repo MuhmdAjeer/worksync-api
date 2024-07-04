@@ -24,73 +24,6 @@
           "nullable": false,
           "mappedType": "text"
         },
-        "workspace_id": {
-          "name": "workspace_id",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
-        "is_accepted": {
-          "name": "is_accepted",
-          "type": "boolean",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "default": "false",
-          "mappedType": "boolean"
-        },
-        "role": {
-          "name": "role",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        }
-      },
-      "name": "invitation",
-      "schema": "public",
-      "indexes": [
-        {
-          "keyName": "invitation_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {},
-      "nativeEnums": {}
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "serial",
-          "unsigned": true,
-          "autoincrement": true,
-          "primary": true,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "email": {
-          "name": "email",
-          "type": "text",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "text"
-        },
         "secret": {
           "name": "secret",
           "type": "text",
@@ -138,6 +71,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -148,6 +82,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -226,6 +161,15 @@
           "nullable": true,
           "default": "null",
           "mappedType": "text"
+        },
+        "onboarding": {
+          "name": "onboarding",
+          "type": "jsonb",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "json"
         }
       },
       "name": "users",
@@ -285,6 +229,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -295,6 +240,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -417,6 +363,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -427,6 +374,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -481,6 +429,16 @@
       "schema": "public",
       "indexes": [
         {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
+          "keyName": "workspace_name_unique",
+          "constraint": true,
+          "primary": false,
+          "unique": true
+        },
+        {
           "keyName": "workspace_pkey",
           "columnNames": [
             "id"
@@ -514,6 +472,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -524,6 +483,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -741,6 +701,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -751,6 +712,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -869,6 +831,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -879,6 +842,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -979,6 +943,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -989,6 +954,7 @@
           "primary": false,
           "nullable": false,
           "length": 6,
+          "default": "now()",
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1183,6 +1149,128 @@
           ],
           "referencedTableName": "public.users",
           "deleteRule": "cascade",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "default": "now()",
+          "mappedType": "datetime"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "version": {
+          "name": "version",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "workspace_id": {
+          "name": "workspace_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        },
+        "is_accepted": {
+          "name": "is_accepted",
+          "type": "boolean",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "false",
+          "mappedType": "boolean"
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "text"
+        }
+      },
+      "name": "invitation",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "invitation_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "invitation_workspace_id_foreign": {
+          "constraintName": "invitation_workspace_id_foreign",
+          "columnNames": [
+            "workspace_id"
+          ],
+          "localTableName": "public.invitation",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.workspace",
           "updateRule": "cascade"
         }
       },

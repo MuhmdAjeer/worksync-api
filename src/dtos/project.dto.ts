@@ -42,8 +42,6 @@ export class createProjectDto {
   @IsNotEmpty()
   custom_id: string;
   @IsNotEmpty()
-  workspace_id: string;
-  @IsNotEmpty()
   @IsUUID()
   lead_id: string;
 

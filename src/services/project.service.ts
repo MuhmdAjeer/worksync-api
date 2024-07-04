@@ -24,9 +24,12 @@ export class ProjectService {
   ) {}
   private readonly logger = new Logger(ProjectService.name);
 
-  async create(projectDto: createProjectDto): Promise<ProjectDto> {
+  async create(
+    slug: string,
+    projectDto: createProjectDto,
+  ): Promise<ProjectDto> {
     const workspace = await this.workspaceRepo.findOneOrFail({
-      id: projectDto.workspace_id,
+      name: slug,
     });
 
     const project = new Project(projectDto);
@@ -47,7 +50,7 @@ export class ProjectService {
 
   async findProjectsByWorkspace(workspaceId: string): Promise<ProjectDto[]> {
     const workspace = await this.workspaceRepo.findOneOrFail({
-      id: workspaceId,
+      name: workspaceId,
     });
 
     const projects = await this.projectRepo.find(

@@ -30,7 +30,7 @@ export class OnboardingService {
       if (member.email === user.email) return null;
       const invitation = new Invitation({
         email: member.email,
-        workspace_id: workspace.id,
+        workspace: workspace,
         role: member.role,
       });
 

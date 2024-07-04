@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
 import { ProjectDto } from 'src/dtos/project.dto';
+import { InviteMembersDto } from 'src/dtos/workspace.dto';
 import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
 import { ProjectService } from 'src/services/project.service';
@@ -36,10 +37,27 @@ export class WorkspaceController {
     return await this.workspaceService.getUserWorkspaces();
   }
 
-  @Get('/:workspaceId/projects')
-  async getWorkspaceProjects(@Param('workspaceId') id: string) {
-    return await this.projectSvc.findProjectsByWorkspace(id);
+  @UseGuards(JwtAuthGuard)
+  @Get(':slug')
+  async getWorkspaceBySlug(@Param('slug') slug: string) {
+    return await this.workspaceService.getWorkspaceBySlug(slug);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/:slug/projects')
+  async getWorkspaceProjects(@Param('slug') slug: string) {
+    return await this.projectSvc.findProjectsByWorkspace(slug);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':slug/invite')
+  async inviteMembers(
+    @Param('slug') slug: string,
+    @Body() body: InviteMembersDto,
+  ) {
+    return await this.workspaceService.inviteMembers(slug, body);
+  }
+
   @Get('/users')
   async listUsers() {
     return await this.workspaceService.listUsers();

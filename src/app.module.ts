@@ -29,10 +29,13 @@ import { Project } from './entities/Project.entity';
 import { Issue } from './entities/Issue.entity';
 import { IssueController } from './controllers/issue.controller';
 import { IssueService } from './services/issue.service';
+import { UserController } from './controllers/user.controller';
+import { UserService } from './services/user.service';
+import { InviteService } from './services/invite.service';
 
 @Module({
   imports: [
-    AuthModule,
+    
     MikroOrmModule.forRoot(config),
     MikroOrmModule.forFeature({
       entities: [
@@ -62,6 +65,7 @@ import { IssueService } from './services/issue.service';
     }),
     ConfigModule.forRoot(),
     ClsModule.forRoot({ middleware: { mount: true } }),
+    AuthModule,
   ],
   controllers: [
     AppController,
@@ -70,6 +74,7 @@ import { IssueService } from './services/issue.service';
     WorkspaceController,
     ProjectsController,
     IssueController,
+    UserController,
   ],
   providers: [
     IssueService,
@@ -82,6 +87,8 @@ import { IssueService } from './services/issue.service';
     WorkspaceService,
     ProjectService,
     MailService,
+    UserService,
+    InviteService,
   ],
 })
 export class AppModule {}

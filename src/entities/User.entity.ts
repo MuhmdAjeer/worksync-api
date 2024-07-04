@@ -12,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { Base } from './base.entity';
 import { Project } from './Project.entity';
 import { WorkspaceMember } from './WorkspaceMember.entity';
+import { OnboardMeta } from 'src/dtos/user.dto';
 
 @Entity({ repository: () => UserRepo, tableName: 'users' })
 export class User extends Base {
@@ -40,6 +41,15 @@ export class User extends Base {
 
   @OneToMany(() => WorkspaceMember, (workspaceMember) => workspaceMember.user)
   workspaces = new Collection<WorkspaceMember>(this);
+
+  @Property({ type: 'json', nullable: true })
+  onboarding: OnboardMeta = {
+    is_onboarded: false,
+    profile_complete: false,
+    workspace_create: false,
+    workspace_invite: false,
+    workspace_join: false,
+  };
 
   @BeforeCreate()
   async hashPassword() {

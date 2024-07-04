@@ -47,12 +47,6 @@ export class AuthController {
     return { access_token: token, ...req.user };
   }
 
-  @Get('/currentUser')
-  @UseGuards(JwtAuthGuard)
-  getCurrentUser(@Req() req: Request & { user: User }) {
-    return req.user;
-  }
-
   @Post('/logout')
   logout(@Res({ passthrough: true }) response: Response) {
     response.clearCookie('jwt');

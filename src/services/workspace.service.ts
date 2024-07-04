@@ -1,10 +1,12 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ConflictException, Injectable, Logger } from '@nestjs/common';
 import { User, UserRepo } from 'src/entities/User.entity';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
 import { Workspace, WorkspaceRepo } from 'src/entities/Workspace.entity';
 import { ClsService } from 'nestjs-cls';
 import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { MailService } from './mail.service';
+import { InviteMembersDto, WorkspaceDto } from 'src/dtos/workspace.dto';
+import { InviteService } from './invite.service';
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -13,6 +15,7 @@ export class WorkspaceService {
     private clsService: ClsService,
     private userRepo: UserRepo,
     private mailSvc: MailService,
+    private inviteSvc: InviteService,
   ) {}
   private readonly logger = new Logger('workspace svc');
 
@@ -28,7 +31,7 @@ export class WorkspaceService {
     for (const member of createWorkspaceDto.members) {
       const invitation = new Invitation({
         email: member.email,
-        workspace_id: workspace.id,
+        workspace: workspace,
         role: member.role,
       });
       await this.mailSvc.inviteToWorkspace({
@@ -45,6 +48,21 @@ export class WorkspaceService {
     const workspaces = await this.workspaceRepo.find({ owner_id: user.id });
     this.logger.log({ workspaces });
     return workspaces;
+  }
+
+  async getWorkspaceBySlug(slug: string): Promise<WorkspaceDto> {
+    const workspace = await this.workspaceRepo.findOneOrFail({ name: slug });
+    return workspace;
+  }
+
+  async inviteMembers(slug: string, inviteDto: InviteMembersDto) {
+    const workspace = await this.workspaceRepo.findOneOrFail(
+      { name: slug },
+      { populate: ['members'] },
+    );
+    await this.inviteSvc.inviteMembers(workspace, inviteDto);
+    this.logger.debug('HYYYYY TIS ONE');
+    return;
   }
 
   async listUsers() {

@@ -5,7 +5,7 @@ import { SeedManager } from '@mikro-orm/seeder';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 export default defineConfig<PostgreSqlDriver>({
-  dbName: 'auth_db',
+  dbName: 'worksync',
   driver: PostgreSqlDriver,
   host: 'localhost',
   port: 5432,
