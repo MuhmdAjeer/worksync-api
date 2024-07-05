@@ -95,7 +95,6 @@ export class WorkspaceService {
 
   async listUsers() {
     const users = await this.userRepo.findAll();
-    this.logger.log({ usersddvdfd: users });
     return users;
   }
 }

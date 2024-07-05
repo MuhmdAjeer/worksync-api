@@ -12,7 +12,7 @@ import {
 } from '@nestjs/common';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
 import { ProjectDto } from 'src/dtos/project.dto';
-import { InviteMembersDto } from 'src/dtos/workspace.dto';
+import { InviteMembersDto, WorkspaceMemberDto } from 'src/dtos/workspace.dto';
 import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
 import { InviteService } from 'src/services/invite.service';
@@ -64,7 +64,7 @@ export class WorkspaceController {
   @UseGuards(JwtAuthGuard)
   @Get(':slug/members')
   async getMembers(@Param('slug') slug: string) {
-    await this.workspaceService.getMembers(slug);
+    return await this.workspaceService.getMembers(slug);
   }
 
   @Get('/users')

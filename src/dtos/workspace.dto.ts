@@ -7,8 +7,7 @@ export class WorkspaceDto extends BaseDto {
   owner_id: string;
 }
 
-export class WorkspaceMemberDto {
-  id: number;
+export class WorkspaceMemberDto extends BaseDto {
   user: UserDto;
   workspace: WorkspaceDto;
   role: string;

@@ -27,7 +27,7 @@ export class UserService {
     const userDto = this.clsService.get<UserDto>('reqUser');
     let user = await this.userRepo.findOneOrFail({ id: userDto.id });
     wrap(user).assign(profile);
-    await this.userRepo.getEntityManager().flush();
+    await this.userRepo.getEntityManager().persistAndFlush(user);
     return user;
   }
 
