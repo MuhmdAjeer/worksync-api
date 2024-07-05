@@ -7,6 +7,8 @@ import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { MailService } from './mail.service';
 import { InviteMembersDto, WorkspaceDto } from 'src/dtos/workspace.dto';
 import { InviteService } from './invite.service';
+import { WorkspaceMember } from 'src/entities/WorkspaceMember.entity';
+import { EntityManager } from '@mikro-orm/postgresql';
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -16,17 +18,25 @@ export class WorkspaceService {
     private userRepo: UserRepo,
     private mailSvc: MailService,
     private inviteSvc: InviteService,
+    private em: EntityManager,
   ) {}
   private readonly logger = new Logger('workspace svc');
 
   async create(createWorkspaceDto: CreateWorkspaceDto) {
     const user = this.clsService.get<User>('reqUser');
+
     const workspace = new Workspace({
       name: createWorkspaceDto.name,
       owner_id: user.id,
       use: createWorkspaceDto.use,
     });
-    this.workspaceRepo.getEntityManager().persistAndFlush(workspace);
+
+    const owner = new WorkspaceMember({
+      role: 'admin',
+      user,
+      workspace: workspace,
+    });
+    workspace.members.add(owner);
 
     for (const member of createWorkspaceDto.members) {
       const invitation = new Invitation({
@@ -39,14 +49,20 @@ export class WorkspaceService {
         ownerEmail: user.email,
         workspaceName: workspace.name,
       });
-      this.invitationRepo.getEntityManager().persistAndFlush(invitation);
+      this.em.persistAndFlush(invitation);
     }
+
+    this.em.persistAndFlush([workspace, owner, workspace]);
+    return;
   }
 
   async getUserWorkspaces() {
-    const user = this.clsService.get<User>('reqUser');
-    const workspaces = await this.workspaceRepo.find({ owner_id: user.id });
-    this.logger.log({ workspaces });
+    const { id } = this.clsService.get<User>('reqUser');
+    const user = await this.userRepo.findOneOrFail(
+      { id },
+      { populate: ['workspaces.workspace'] },
+    );
+    const workspaces = user.workspaces.getItems().map((wm) => wm.workspace);
     return workspaces;
   }
 

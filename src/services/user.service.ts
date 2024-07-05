@@ -17,7 +17,7 @@ export class UserService {
   async getInvitations(): Promise<InvitationDto[]> {
     const user = this.clsService.get<UserDto>('reqUser');
     const invitations = await this.invitationRepo.findAll({
-      where: { email: user.email },
+      where: { email: user.email, is_accepted: false },
       populate: ['workspace'],
     });
     return invitations.map((x) => wrap(x).toObject());

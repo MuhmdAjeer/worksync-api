@@ -32,10 +32,10 @@ import { IssueService } from './services/issue.service';
 import { UserController } from './controllers/user.controller';
 import { UserService } from './services/user.service';
 import { InviteService } from './services/invite.service';
+import { InvitationController } from './controllers/invitation.controller';
 
 @Module({
   imports: [
-    
     MikroOrmModule.forRoot(config),
     MikroOrmModule.forFeature({
       entities: [
@@ -75,6 +75,7 @@ import { InviteService } from './services/invite.service';
     ProjectsController,
     IssueController,
     UserController,
+    InvitationController,
   ],
   providers: [
     IssueService,

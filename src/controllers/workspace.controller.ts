@@ -5,6 +5,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   UseGuards,
   UseInterceptors,
@@ -14,6 +15,7 @@ import { ProjectDto } from 'src/dtos/project.dto';
 import { InviteMembersDto } from 'src/dtos/workspace.dto';
 import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
+import { InviteService } from 'src/services/invite.service';
 import { ProjectService } from 'src/services/project.service';
 import { WorkspaceService } from 'src/services/workspace.service';
 @Controller('workspace')
@@ -21,6 +23,7 @@ export class WorkspaceController {
   constructor(
     private workspaceService: WorkspaceService,
     private projectSvc: ProjectService,
+    private inviteService: InviteService,
   ) {}
 
   private readonly logger = new Logger('auth controller');
@@ -50,7 +53,7 @@ export class WorkspaceController {
   }
 
   @UseGuards(JwtAuthGuard)
-  @Post(':slug/invite')
+  @Post(':slug/invitations')
   async inviteMembers(
     @Param('slug') slug: string,
     @Body() body: InviteMembersDto,
