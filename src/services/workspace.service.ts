@@ -5,10 +5,14 @@ import { Workspace, WorkspaceRepo } from 'src/entities/Workspace.entity';
 import { ClsService } from 'nestjs-cls';
 import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { MailService } from './mail.service';
-import { InviteMembersDto, WorkspaceDto } from 'src/dtos/workspace.dto';
+import {
+  InviteMembersDto,
+  WorkspaceDto,
+  WorkspaceMemberDto,
+} from 'src/dtos/workspace.dto';
 import { InviteService } from './invite.service';
 import { WorkspaceMember } from 'src/entities/WorkspaceMember.entity';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, wrap } from '@mikro-orm/postgresql';
 @Injectable()
 export class WorkspaceService {
   constructor(
@@ -79,6 +83,14 @@ export class WorkspaceService {
     await this.inviteSvc.inviteMembers(workspace, inviteDto);
     this.logger.debug('HYYYYY TIS ONE');
     return;
+  }
+
+  async getMembers(slug: string): Promise<WorkspaceMemberDto[]> {
+    const workspace = await this.workspaceRepo.findOneOrFail(
+      { name: slug },
+      { populate: ['members.user'] },
+    );
+    return workspace.members.map((m) => wrap(m).toObject());
   }
 
   async listUsers() {

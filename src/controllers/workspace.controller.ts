@@ -61,6 +61,12 @@ export class WorkspaceController {
     return await this.workspaceService.inviteMembers(slug, body);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get(':slug/members')
+  async getMembers(@Param('slug') slug: string) {
+    await this.workspaceService.getMembers(slug);
+  }
+
   @Get('/users')
   async listUsers() {
     return await this.workspaceService.listUsers();
