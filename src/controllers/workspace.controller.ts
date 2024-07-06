@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
-import { ProjectDto } from 'src/dtos/project.dto';
+import { ProjectDto, createProjectDto } from 'src/dtos/project.dto';
 import { InviteMembersDto, WorkspaceMemberDto } from 'src/dtos/workspace.dto';
 import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
@@ -65,6 +65,11 @@ export class WorkspaceController {
   @Get(':slug/members')
   async getMembers(@Param('slug') slug: string) {
     return await this.workspaceService.getMembers(slug);
+  }
+
+  @Post(':slug/project')
+  async create(@Body() body: createProjectDto, @Param('slug') slug: string) {
+    return await this.projectSvc.create(slug, body);
   }
 
   @Get('/users')

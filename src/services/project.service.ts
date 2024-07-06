@@ -72,4 +72,9 @@ export class ProjectService {
 
     return projects.map((x) => wrap(x).toObject());
   }
+
+  async findProjectById(id: string): Promise<ProjectDto> {
+    const project = await this.projectRepo.findOneOrFail({ id });
+    return wrap(project).toObject();
+  }
 }
