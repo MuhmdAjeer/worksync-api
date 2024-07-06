@@ -1,6 +1,7 @@
 import {
   Entity,
   EntityRepositoryType,
+  Enum,
   ManyToOne,
   PrimaryKey,
   Property,
@@ -21,8 +22,8 @@ export class WorkspaceMember extends Base {
   @ManyToOne(() => Workspace)
   workspace!: Workspace;
 
-  @Property()
-  role: EUserWorkspaceRoles;
+  @Enum(() => EUserWorkspaceRoles)
+  role!: EUserWorkspaceRoles;
 
   constructor(member: Partial<WorkspaceMember>) {
     super();

@@ -1,6 +1,7 @@
 import {
   Entity,
   EntityRepositoryType,
+  Enum,
   ManyToOne,
   PrimaryKey,
   Property,
@@ -23,8 +24,8 @@ export class ProjectMember extends Base {
   @ManyToOne()
   project: Ref<Project>;
 
-  @Property()
-  role: EUserProjectRoles;
+  @Enum(() => EUserProjectRoles)
+  role!: EUserProjectRoles;
 
   constructor(member: Partial<ProjectMember>) {
     super();

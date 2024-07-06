@@ -67,7 +67,7 @@ function isHashed(str: string) {
   return str.startsWith('$2b$');
 }
 
-function hashPassword(password: string): string {
+export function hashPassword(password: string): string {
   return bcrypt.hashSync(password, 10);
 }
 
