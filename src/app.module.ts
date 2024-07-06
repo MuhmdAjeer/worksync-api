@@ -35,6 +35,7 @@ import { InviteService } from './services/invite.service';
 import { InvitationController } from './controllers/invitation.controller';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
+import { IssueState } from './entities/IssueState.entity';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { APP_GUARD } from '@nestjs/core';
         FileUpload,
         Project,
         Issue,
+        IssueState,
       ],
     }),
 

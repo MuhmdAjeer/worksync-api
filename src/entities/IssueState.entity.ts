@@ -12,8 +12,11 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { Base } from './base.entity';
 import { User } from './User.entity';
 import { Project } from './Project.entity';
-import { IssuePriority, IssueState as State } from 'src/dtos/Issue.dto';
-import { Issue } from './Issue.entity';
+import {
+  IssuePriority,
+  IssueState as State,
+  TStateGroups,
+} from 'src/dtos/Issue.dto';
 
 @Entity({ repository: () => IssueStateRepo })
 export class IssueState extends Base {
@@ -25,8 +28,8 @@ export class IssueState extends Base {
   @Property({ nullable: true })
   color?: string;
 
-  @Property()
-  group: string;
+  @Enum(() => TStateGroups)
+  group: TStateGroups;
 
   @Property({ nullable: true })
   description?: string;

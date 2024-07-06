@@ -11,4 +11,9 @@ export class ProjectsController {
   async getProject(@UuidParam('id') id: string) {
     return await this.projectSvc.findProjectById(id);
   }
+
+  @Get('/:id/states')
+  async getProjectStates(@UuidParam('id') id: string) {
+    return await this.projectSvc.getStates(id);
+  }
 }

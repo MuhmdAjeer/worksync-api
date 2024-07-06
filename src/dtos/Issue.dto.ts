@@ -1,5 +1,6 @@
 import { IsUUID } from 'class-validator';
 import { BaseDto } from './base.dto';
+import { ApiProperty } from '@nestjs/swagger';
 
 export enum IssueState {
   BACKLOG = 'Backlog',
@@ -30,6 +31,15 @@ export class CreateIssueDto {
 export class IssueStateDto extends BaseDto {
   name: string;
   color?: string;
-  group: string;
+  @ApiProperty()
+  group: TStateGroups;
   description?: string;
+}
+
+export enum TStateGroups {
+  BACKLOG = 'backlog',
+  UNSTARTED = 'unstarted',
+  STARTED = 'started',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled',
 }

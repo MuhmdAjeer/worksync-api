@@ -1,30 +1,35 @@
-export const states = [
+import { IssueStateDto, TStateGroups } from 'src/dtos/Issue.dto';
+
+type StateDto = Omit<IssueStateDto, 'id' | 'version'>;
+
+export const states: StateDto[] = [
   {
     name: 'Backlog',
     color: '#A3A3A3',
-    group: 'backlog',
+    group: TStateGroups.BACKLOG,
   },
   {
     name: 'Todo',
     color: '#3A3A3A',
-    group: 'unstarted',
+    group: TStateGroups.UNSTARTED,
   },
   {
     name: 'In Progress',
     color: '#F59E0B',
-    group: 'started',
+    group: TStateGroups.STARTED,
   },
   {
     name: 'Done',
     color: '#16A34A',
-    group: 'completed',
+    group: TStateGroups.COMPLETED,
   },
   {
     name: 'Cancelled',
     color: '#EF4444',
-    group: 'cancelled',
+    group: TStateGroups.CANCELLED,
   },
 ];
+
 export const emojiToDecimalUnicode = (emoji: string) => {
   const codePoints: number[] = [];
   for (let i = 0; i < emoji.length; i++) {

@@ -8,6 +8,7 @@ import {
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { states } from 'src/constants/project';
+import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
   EUserProjectRoles,
   ProjectDto,
@@ -25,6 +26,7 @@ export class ProjectService {
     private workspaceRepo: WorkspaceRepo,
     private userRepo: UserRepo,
     private projectRepo: ProjectRepo,
+    private issueStateRepo: IssueStateRepo,
     private em: EntityManager,
   ) {}
   private readonly logger = new Logger(ProjectService.name);
@@ -76,5 +78,11 @@ export class ProjectService {
   async findProjectById(id: string): Promise<ProjectDto> {
     const project = await this.projectRepo.findOneOrFail({ id });
     return wrap(project).toObject();
+  }
+
+  async getStates(id: string): Promise<IssueStateDto[]> {
+    const project = await this.projectRepo.findOneOrFail(id);
+    const states = await this.issueStateRepo.findAll({ where: { project } });
+    return states;
   }
 }
