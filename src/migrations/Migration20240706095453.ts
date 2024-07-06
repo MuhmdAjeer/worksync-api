@@ -1,6 +1,6 @@
 import { Migration } from '@mikro-orm/migrations';
 
-export class Migration20240703113111 extends Migration {
+export class Migration20240706095453 extends Migration {
 
   async up(): Promise<void> {
     this.addSql('create table "otp" ("id" serial primary key, "email" text not null, "secret" text not null);');
@@ -16,7 +16,7 @@ export class Migration20240703113111 extends Migration {
 
     this.addSql('create table "project" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "name" text not null, "custom_id" text not null, "description" text not null, "workspace_id" text not null, "lead_id" text not null, "cover_image" text null, "logo" text null, constraint "project_pkey" primary key ("id"));');
 
-    this.addSql('create table "project_members" ("project_id" text not null, "user_id" text not null, constraint "project_members_pkey" primary key ("project_id", "user_id"));');
+    this.addSql('create table "project_member" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "user_id" text not null, "project_id" text not null, "role" text check ("role" in (\'ADMIN\', \'MEMBER\', \'GUEST\')) not null, constraint "project_member_pkey" primary key ("id"));');
 
     this.addSql('create table "issue_state" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "name" text not null, "color" text null, "group" text not null, "description" text null, "project_id" text not null, constraint "issue_state_pkey" primary key ("id"));');
 
@@ -26,17 +26,17 @@ export class Migration20240703113111 extends Migration {
 
     this.addSql('create table "issue_assignees" ("issue_id" text not null, "user_id" text not null, constraint "issue_assignees_pkey" primary key ("issue_id", "user_id"));');
 
-    this.addSql('create table "invitation" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "email" text not null, "workspace_id" text not null, "is_accepted" boolean not null default false, "role" text not null, constraint "invitation_pkey" primary key ("id"));');
+    this.addSql('create table "invitation" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "email" text not null, "workspace_id" text not null, "is_accepted" boolean not null default false, "role" text check ("role" in (\'ADMIN\', \'MEMBER\', \'GUEST\')) not null, constraint "invitation_pkey" primary key ("id"));');
 
-    this.addSql('create table "workspace_member" ("id" serial primary key, "user_id" text not null, "workspace_id" text not null, "role" text not null);');
+    this.addSql('create table "workspace_member" ("id" text not null, "created_at" timestamptz not null default now(), "updated_at" timestamptz not null default now(), "deleted_at" timestamptz null, "version" int not null default 1, "user_id" text not null, "workspace_id" text not null, "role" text check ("role" in (\'ADMIN\', \'MEMBER\', \'GUEST\')) not null, constraint "workspace_member_pkey" primary key ("id"));');
 
     this.addSql('alter table "file_upload" add constraint "file_upload_user_id_foreign" foreign key ("user_id") references "users" ("id") on update cascade on delete set null;');
 
     this.addSql('alter table "project" add constraint "project_workspace_id_foreign" foreign key ("workspace_id") references "workspace" ("id") on update cascade;');
     this.addSql('alter table "project" add constraint "project_lead_id_foreign" foreign key ("lead_id") references "users" ("id") on update cascade;');
 
-    this.addSql('alter table "project_members" add constraint "project_members_project_id_foreign" foreign key ("project_id") references "project" ("id") on update cascade on delete cascade;');
-    this.addSql('alter table "project_members" add constraint "project_members_user_id_foreign" foreign key ("user_id") references "users" ("id") on update cascade on delete cascade;');
+    this.addSql('alter table "project_member" add constraint "project_member_user_id_foreign" foreign key ("user_id") references "users" ("id") on update cascade;');
+    this.addSql('alter table "project_member" add constraint "project_member_project_id_foreign" foreign key ("project_id") references "project" ("id") on update cascade;');
 
     this.addSql('alter table "issue_state" add constraint "issue_state_project_id_foreign" foreign key ("project_id") references "project" ("id") on update cascade;');
 
@@ -59,7 +59,7 @@ export class Migration20240703113111 extends Migration {
 
     this.addSql('alter table "project" drop constraint "project_lead_id_foreign";');
 
-    this.addSql('alter table "project_members" drop constraint "project_members_user_id_foreign";');
+    this.addSql('alter table "project_member" drop constraint "project_member_user_id_foreign";');
 
     this.addSql('alter table "issue" drop constraint "issue_issued_by_id_foreign";');
 
@@ -73,7 +73,7 @@ export class Migration20240703113111 extends Migration {
 
     this.addSql('alter table "workspace_member" drop constraint "workspace_member_workspace_id_foreign";');
 
-    this.addSql('alter table "project_members" drop constraint "project_members_project_id_foreign";');
+    this.addSql('alter table "project_member" drop constraint "project_member_project_id_foreign";');
 
     this.addSql('alter table "issue_state" drop constraint "issue_state_project_id_foreign";');
 
@@ -93,7 +93,7 @@ export class Migration20240703113111 extends Migration {
 
     this.addSql('drop table if exists "project" cascade;');
 
-    this.addSql('drop table if exists "project_members" cascade;');
+    this.addSql('drop table if exists "project_member" cascade;');
 
     this.addSql('drop table if exists "issue_state" cascade;');
 
