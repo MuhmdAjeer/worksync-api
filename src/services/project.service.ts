@@ -8,9 +8,14 @@ import {
 import { EntityManager } from '@mikro-orm/postgresql';
 import { Injectable, Logger } from '@nestjs/common';
 import { states } from 'src/constants/project';
-import { ProjectDto, createProjectDto } from 'src/dtos/project.dto';
+import {
+  EUserProjectRoles,
+  ProjectDto,
+  createProjectDto,
+} from 'src/dtos/project.dto';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { Project, ProjectRepo } from 'src/entities/Project.entity';
+import { ProjectMember } from 'src/entities/ProjectMember.entity';
 import { UserRepo } from 'src/entities/User.entity';
 import { WorkspaceRepo } from 'src/entities/Workspace.entity';
 
@@ -37,14 +42,21 @@ export class ProjectService {
 
     project.workspace = workspace;
     project.lead = lead;
-    project.members.add(lead);
+
+    const projectMember = new ProjectMember({
+      project: ref(project),
+      // project,
+      role: EUserProjectRoles.ADMIN,
+      user: lead,
+    });
+    project.members.add(projectMember);
 
     for (const state of states) {
       const issueState = new IssueState({ ...state, project: ref(project) });
       project.states.add(issueState);
     }
 
-    await this.projectRepo.getEntityManager().persistAndFlush(project);
+    this.em.persistAndFlush([project, projectMember]);
     return wrap(project).toObject();
   }
 

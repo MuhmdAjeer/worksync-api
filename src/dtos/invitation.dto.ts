@@ -1,13 +1,14 @@
 import { Workspace } from 'src/entities/Workspace.entity';
 import { BaseDto } from './base.dto';
-import { WorkspaceDto } from './workspace.dto';
+import { EUserWorkspaceRoles, WorkspaceDto } from './workspace.dto';
 import { IsArray, IsUUID } from 'class-validator';
+import { EUserProjectRoles } from './project.dto';
 
 export class InvitationDto extends BaseDto {
   email: string;
   workspace: WorkspaceDto;
   is_accepted: boolean;
-  role: string;
+  role: EUserWorkspaceRoles;
 }
 
 export class AcceptInvitationsDto {

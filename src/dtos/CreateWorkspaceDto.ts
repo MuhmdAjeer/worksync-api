@@ -3,11 +3,14 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
+import { EUserProjectRoles } from './project.dto';
+import { EUserWorkspaceRoles } from './workspace.dto';
 class MemberDto {
   @ApiProperty()
   @IsEmail()
@@ -15,8 +18,7 @@ class MemberDto {
 
   @ApiProperty()
   @IsNotEmpty()
-  @IsString()
-  role: string;
+  role: EUserWorkspaceRoles;
 }
 
 export class CreateWorkspaceDto {

@@ -33,9 +33,17 @@ import { UserController } from './controllers/user.controller';
 import { UserService } from './services/user.service';
 import { InviteService } from './services/invite.service';
 import { InvitationController } from './controllers/invitation.controller';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 10000,
+        limit: 2,
+      },
+    ]),
     MikroOrmModule.forRoot(config),
     MikroOrmModule.forFeature({
       entities: [
@@ -78,6 +86,11 @@ import { InvitationController } from './controllers/invitation.controller';
     InvitationController,
   ],
   providers: [
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+
     IssueService,
     AppService,
     OnboardingService,

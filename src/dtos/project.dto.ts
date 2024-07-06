@@ -1,12 +1,6 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { BaseDto } from './base.dto';
-import { Workspace } from 'src/entities/Workspace.entity';
 import { IsNotEmpty, IsUUID } from 'class-validator';
-import { Issue } from 'src/entities/Issue.entity';
-import { IssueState } from 'src/entities/IssueState.entity';
-import { IssueLabel } from 'src/entities/IssueLabels.entity';
-import { User } from 'src/entities/User.entity';
-import { IssuePriority, IssueStateDto } from './Issue.dto';
+import { IssueStateDto } from './Issue.dto';
 import { WorkspaceDto } from './workspace.dto';
 import { UserDto } from './user.dto';
 
@@ -20,7 +14,7 @@ export class ProjectDto extends BaseDto {
   lead: UserDto;
   cover_image?: string;
   logo?: string;
-  members: UserDto[];
+  // members: UserDto[];
 }
 
 export class IssueDto extends BaseDto {
@@ -47,4 +41,10 @@ export class createProjectDto {
 
   cover_image?: string;
   logo?: string;
+}
+
+export enum EUserProjectRoles {
+  ADMIN = 'ADMIN',
+  MEMBER = 'MEMBER',
+  GUEST = 'GUEST',
 }

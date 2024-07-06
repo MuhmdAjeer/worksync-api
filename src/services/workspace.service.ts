@@ -6,6 +6,7 @@ import { ClsService } from 'nestjs-cls';
 import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { MailService } from './mail.service';
 import {
+  EUserWorkspaceRoles,
   InviteMembersDto,
   WorkspaceDto,
   WorkspaceMemberDto,
@@ -36,7 +37,7 @@ export class WorkspaceService {
     });
 
     const owner = new WorkspaceMember({
-      role: 'admin',
+      role: EUserWorkspaceRoles.ADMIN,
       user,
       workspace: workspace,
     });

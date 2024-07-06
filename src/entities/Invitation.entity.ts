@@ -1,6 +1,7 @@
 import {
   Entity,
   EntityRepositoryType,
+  Enum,
   ManyToOne,
   PrimaryKey,
   Property,
@@ -10,6 +11,7 @@ import {
 import { EntityRepository } from '@mikro-orm/postgresql';
 import { Workspace } from './Workspace.entity';
 import { Base } from './base.entity';
+import { EUserWorkspaceRoles } from 'src/dtos/workspace.dto';
 
 @Entity({ repository: () => InvitationRepo })
 export class Invitation extends Base {
@@ -23,11 +25,11 @@ export class Invitation extends Base {
   @Property({ default: false })
   is_accepted: boolean;
 
-  @Property()
-  role: string;
+  @Enum(() => EUserWorkspaceRoles)
+  role: EUserWorkspaceRoles;
 
   constructor(invitation: {
-    role: string;
+    role: EUserWorkspaceRoles;
     email: string;
     workspace: Workspace;
   }) {

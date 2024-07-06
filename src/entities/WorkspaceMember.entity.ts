@@ -9,6 +9,7 @@ import { EntityRepository } from '@mikro-orm/postgresql';
 import { User } from './User.entity';
 import { Workspace } from './Workspace.entity';
 import { Base } from './base.entity';
+import { EUserWorkspaceRoles } from 'src/dtos/workspace.dto';
 
 @Entity({ repository: () => WorkspaceMemberRepo })
 export class WorkspaceMember extends Base {
@@ -21,7 +22,7 @@ export class WorkspaceMember extends Base {
   workspace!: Workspace;
 
   @Property()
-  role: string;
+  role: EUserWorkspaceRoles;
 
   constructor(member: Partial<WorkspaceMember>) {
     super();

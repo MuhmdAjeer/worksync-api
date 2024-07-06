@@ -36,9 +36,6 @@ export class User extends Base {
   @Property({ default: null, nullable: true })
   profile_picture?: string;
 
-  @ManyToMany(() => Project, (p) => p.members)
-  projects = new Collection<Project>(this);
-
   @OneToMany(() => WorkspaceMember, (workspaceMember) => workspaceMember.user)
   workspaces = new Collection<WorkspaceMember>(this);
 

@@ -16,6 +16,7 @@ import { IssueLabel } from './IssueLabels.entity';
 import { IssueState } from './IssueState.entity';
 import { ApiProperty } from '@nestjs/swagger';
 import { createProjectDto } from 'src/dtos/project.dto';
+import { ProjectMember } from './ProjectMember.entity';
 
 @Entity({ repository: () => ProjectRepo })
 export class Project extends Base {
@@ -45,14 +46,15 @@ export class Project extends Base {
   @ManyToOne(() => User)
   lead: User;
 
+  @OneToMany(() => ProjectMember, (pm) => pm.project)
+  members = new Collection<ProjectMember>(this);
+
   @Property({ nullable: true, default: null })
   cover_image?: string;
 
   @Property({ nullable: true, default: null })
   logo?: string;
 
-  @ManyToMany({ entity: () => User })
-  members = new Collection<User>(this);
   constructor(obj: Partial<Project>) {
     super();
     Object.assign(this, obj);
