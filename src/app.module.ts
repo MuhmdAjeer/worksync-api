@@ -40,8 +40,8 @@ import { APP_GUARD } from '@nestjs/core';
   imports: [
     ThrottlerModule.forRoot([
       {
-        ttl: 10000,
-        limit: 2,
+        ttl: 60000,
+        limit: 100,
       },
     ]),
     MikroOrmModule.forRoot(config),
