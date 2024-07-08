@@ -22,8 +22,8 @@ export class Issue extends Base {
   @Property()
   title: string;
 
-  @Property()
-  description: string;
+  @Property({ nullable: true })
+  description?: string;
 
   @ManyToOne(() => Project, { inversedBy: 'issues' })
   Project: Project;
@@ -31,14 +31,17 @@ export class Issue extends Base {
   @ManyToOne(() => User)
   issued_by: User;
 
-  @Enum({ nullable: true, default: null, type: () => IssuePriority })
+  @Enum(() => IssuePriority)
   priority?: IssuePriority;
 
-  @Property()
-  start_date: Date;
+  @ManyToOne(() => IssueState)
+  state?: IssueState;
 
   @Property()
-  end_date: Date;
+  start_date?: Date;
+
+  @Property()
+  end_date?: Date;
 
   @ManyToMany({ entity: () => User })
   assignees = new Collection<User>(this);

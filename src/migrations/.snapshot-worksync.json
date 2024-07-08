@@ -822,7 +822,14 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "text"
+          "enumItems": [
+            "backlog",
+            "unstarted",
+            "started",
+            "completed",
+            "cancelled"
+          ],
+          "mappedType": "enum"
         },
         "description": {
           "name": "description",
@@ -1054,7 +1061,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "text"
         },
         "project_id": {
@@ -1077,13 +1084,27 @@
         },
         "priority": {
           "name": "priority",
-          "type": "smallint",
+          "type": "text",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "default": "null",
+          "enumItems": [
+            "Urgent",
+            "High",
+            "Medium",
+            "Low"
+          ],
           "mappedType": "enum"
+        },
+        "state_id": {
+          "name": "state_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "text"
         },
         "start_date": {
           "name": "start_date",
@@ -1091,7 +1112,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "length": 6,
           "mappedType": "datetime"
         },
@@ -1101,7 +1122,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "length": 6,
           "mappedType": "datetime"
         }
@@ -1144,6 +1165,19 @@
             "id"
           ],
           "referencedTableName": "public.users",
+          "updateRule": "cascade"
+        },
+        "issue_state_id_foreign": {
+          "constraintName": "issue_state_id_foreign",
+          "columnNames": [
+            "state_id"
+          ],
+          "localTableName": "public.issue",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.issue_state",
+          "deleteRule": "set null",
           "updateRule": "cascade"
         }
       },

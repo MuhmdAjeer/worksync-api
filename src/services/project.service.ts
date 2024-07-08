@@ -12,6 +12,7 @@ import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
   EUserProjectRoles,
   ProjectDto,
+  ProjectMemberDto,
   createProjectDto,
 } from 'src/dtos/project.dto';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
@@ -84,5 +85,13 @@ export class ProjectService {
     const project = await this.projectRepo.findOneOrFail(id);
     const states = await this.issueStateRepo.findAll({ where: { project } });
     return states;
+  }
+
+  async getMembers(id: string): Promise<ProjectMemberDto[]> {
+    const project = await this.projectRepo.findOneOrFail(
+      { id },
+      { populate: ['members.user'] },
+    );
+    return project.members.map((pm) => wrap(pm).toObject());
   }
 }

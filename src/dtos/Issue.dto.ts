@@ -19,13 +19,13 @@ export enum IssuePriority {
 
 export class CreateIssueDto {
   title: string;
-  description: string;
-  priority: IssuePriority;
-  state: IssueState;
+  description?: string | undefined;
+  priority?: IssuePriority;
+  state?: IssueState;
   @IsUUID(undefined, { each: true })
-  assignees_id: string[];
-  start_date: Date;
-  end_date: Date;
+  assignees_id?: string[];
+  start_date?: Date;
+  end_date?: Date;
 }
 
 export class IssueStateDto extends BaseDto {

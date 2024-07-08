@@ -1,27 +1,54 @@
+import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
-import { CreateIssueDto } from 'src/dtos/Issue.dto';
+import { CreateIssueDto, IssueStateDto } from 'src/dtos/Issue.dto';
 import { IssueDto } from 'src/dtos/project.dto';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
-import { Project } from 'src/entities/Project.entity';
+import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
+import { Project, ProjectRepo } from 'src/entities/Project.entity';
+import { ProjectMemberRepo } from 'src/entities/ProjectMember.entity';
 import { User, UserRepo } from 'src/entities/User.entity';
 
 @Injectable()
 export class IssueService {
   constructor(
     private issueRepo: IssueRepo,
+    private issueStateRepo: IssueStateRepo,
     private userRepo: UserRepo,
     private clsService: ClsService,
+    private projectRepo: ProjectRepo,
+    private projectMemberRepo: ProjectMemberRepo,
   ) {}
-  async create(createIssueDto: CreateIssueDto, project: Project): Promise<IssueDto> {
-    const issue = new Issue(createIssueDto);
-    issue.Project = project;
-    for (const assigneeId of createIssueDto.assignees_id) {
-      const user = await this.userRepo.findOneOrFail({ id: assigneeId });
-      issue.assignees.add(user);
+
+  async create(
+    createIssueDto: CreateIssueDto,
+    projectId: string,
+  ): Promise<IssueDto> {
+    const project = await this.projectRepo.findOneOrFail({ id: projectId });
+    let state: IssueState | undefined = undefined;
+    if (createIssueDto.state) {
+      state = await this.issueStateRepo.findOneOrFail({
+        project,
+        name: createIssueDto.state,
+      });
     }
+
+    const issue = new Issue({ ...createIssueDto, state });
+    issue.Project = project;
+
+    if (createIssueDto.assignees_id?.length) {
+      for (const assigneeId of createIssueDto.assignees_id) {
+        const pm = await this.projectMemberRepo.findOneOrFail({
+          id: assigneeId,
+        });
+        issue.assignees.add(pm.user);
+      }
+    }
+
     issue.issued_by = this.clsService.get<User>('reqUser');
+
     await this.issueRepo.getEntityManager().persistAndFlush(issue);
-    return issue;
+
+    return wrap(issue).toObject();
   }
 }
