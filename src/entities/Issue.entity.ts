@@ -3,6 +3,10 @@ import {
   Entity,
   EntityRepositoryType,
   Enum,
+  Filter,
+  FilterQuery,
+  FindOptions,
+  Loaded,
   ManyToMany,
   ManyToOne,
   OneToMany,
@@ -15,7 +19,9 @@ import { Project } from './Project.entity';
 import { IssuePriority } from 'src/dtos/Issue.dto';
 import { IssueState } from './IssueState.entity';
 
-@Entity({ repository: () => IssueRepo })
+@Entity({
+  repository: () => IssueRepo,
+})
 export class Issue extends Base {
   [EntityRepositoryType]?: IssueRepo;
 

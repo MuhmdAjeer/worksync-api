@@ -1,6 +1,6 @@
 import { IsUUID } from 'class-validator';
 import { BaseDto } from './base.dto';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
 
 export enum IssueState {
   BACKLOG = 'Backlog',
@@ -35,6 +35,8 @@ export class IssueStateDto extends BaseDto {
   group: TStateGroups;
   description?: string;
 }
+
+export class UpdateIssueDto extends PartialType(CreateIssueDto) {}
 
 export enum TStateGroups {
   BACKLOG = 'backlog',

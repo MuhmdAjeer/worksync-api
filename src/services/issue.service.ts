@@ -1,7 +1,11 @@
-import { wrap } from '@mikro-orm/core';
+import { ref, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
-import { CreateIssueDto, IssueStateDto } from 'src/dtos/Issue.dto';
+import {
+  CreateIssueDto,
+  IssueStateDto,
+  UpdateIssueDto,
+} from 'src/dtos/Issue.dto';
 import { IssueDto } from 'src/dtos/project.dto';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
@@ -49,6 +53,46 @@ export class IssueService {
 
     await this.issueRepo.getEntityManager().persistAndFlush(issue);
 
+    return wrap(issue).toObject();
+  }
+
+  async getIssues(projectId: string): Promise<IssueDto[]> {
+    const project = await this.projectRepo.findOneOrFail({ id: projectId });
+    const issues = await this.issueRepo.find(
+      { Project: project },
+      { populate: ['state', 'Project'], orderBy: { created_at: 'ASC' } },
+    );
+    return issues.map((i) => wrap(i).toObject());
+  }
+
+  async updateIssue(
+    issueId: string,
+    updateDto: UpdateIssueDto,
+  ): Promise<IssueDto> {
+    const issue = await this.issueRepo.findOneOrFail({ id: issueId });
+    const { assignees_id, state, ...restUpdateDto } = updateDto;
+
+    wrap(issue).assign(restUpdateDto);
+
+    if (updateDto.assignees_id?.length) {
+      issue.assignees.removeAll();
+      for (const assigneeId of updateDto.assignees_id) {
+        const pm = await this.projectMemberRepo.findOneOrFail({
+          id: assigneeId,
+        });
+        issue.assignees.add(pm.user);
+      }
+    }
+
+    if (updateDto.state) {
+      const state = await this.issueStateRepo.findOneOrFail({
+        project: issue.Project,
+        name: updateDto.state,
+      });
+      issue.state = state;
+    }
+
+    this.issueRepo.getEntityManager().flush();
     return wrap(issue).toObject();
   }
 }
