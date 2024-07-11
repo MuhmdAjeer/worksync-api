@@ -1,9 +1,11 @@
-import { wrap } from '@mikro-orm/core';
+import { ref, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { InvitationDto } from 'src/dtos/invitation.dto';
 import { UserDto } from 'src/dtos/user.dto';
 import { InvitationRepo } from 'src/entities/Invitation.entity';
+import { ProjectRepo } from 'src/entities/Project.entity';
+import { ProjectMemberRepo } from 'src/entities/ProjectMember.entity';
 import { UserRepo } from 'src/entities/User.entity';
 
 @Injectable()
@@ -12,6 +14,7 @@ export class UserService {
     private userRepo: UserRepo,
     private invitationRepo: InvitationRepo,
     private clsService: ClsService,
+    private projectMemberRepo: ProjectMemberRepo,
   ) {}
 
   async getInvitations(): Promise<InvitationDto[]> {
@@ -35,5 +38,13 @@ export class UserService {
     const { id } = this.clsService.get<UserDto>('reqUser');
     const user = await this.userRepo.findOneOrFail({ id });
     return user;
+  }
+
+  async isUserPartOfProject(userId: string, projectId: string) {
+    const member = await this.projectMemberRepo.findOne({
+      user: userId,
+      project: projectId,
+    });
+    return !!member;
   }
 }
