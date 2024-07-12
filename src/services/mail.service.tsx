@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { render } from '@react-email/components';
 import * as nodemailer from 'nodemailer';
 import * as React from 'react';
@@ -19,15 +20,15 @@ interface SendMailConfiguration {
 export class MailService {
   private transporter: nodemailer.Transporter;
 
-  constructor() {
+  constructor(private configService:ConfigService) {
     this.transporter = nodemailer.createTransport(
       {
         host: 'smtp.gmail.com',
         port: 465,
         secure: true,
         auth: {
-          user: 'muhmdajeer.dev@gmail.com',
-          pass: 'nacetmeybebrjvxf',
+          user: configService.getOrThrow('MAILER_MAIL'),
+          pass: configService.getOrThrow('MAILER_PASSWORD'),
         },
       },
       {
