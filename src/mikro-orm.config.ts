@@ -5,12 +5,12 @@ import { SeedManager } from '@mikro-orm/seeder';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 export default defineConfig<PostgreSqlDriver>({
-  dbName: 'worksync',
+  dbName: process.env['DATABASE_NAME'],
   driver: PostgreSqlDriver,
-  host: 'localhost',
+  host: process.env['DATABASE_HOST'],
   port: 5432,
-  user: 'worksync',
-  password: '123456',
+  user: process.env['DATABASE_USER'],
+  password: process.env['DATABASE_PASSWORD'],
   debug: true,
   entities: ['dist/**/*.entity.js'],
   entitiesTs: ['src/**/*.entity.ts'],
