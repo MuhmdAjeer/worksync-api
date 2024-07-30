@@ -152,6 +152,7 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
     @ConnectedSocket() socket: Socket,
   ) {
     this.logger.log('joining project room', projectId);
+    socket.join(projectId);
     const roomID = projectId;
     //   check if already on the project started a call
     if (this.users[projectId]) {
@@ -223,5 +224,14 @@ export class WsGateway implements OnGatewayConnection, OnGatewayDisconnect {
         socket.broadcast.emit('user:leave', socket.id);
       }
     }
+  }
+  @UseGuards()
+  @SubscribeMessage('video:toggle')
+  handleToggleVideo(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() payload: any,
+  ) {
+    console.log('user toggle video');
+    socket.to(payload.room).emit('user:video:toggle', payload.userId);
   }
 }

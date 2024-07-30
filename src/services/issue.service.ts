@@ -3,10 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import {
   CreateIssueDto,
+  IssueFilterQuery,
+  IssuePriority,
   IssueStateDto,
   UpdateIssueDto,
 } from 'src/dtos/Issue.dto';
 import { IssueDto } from 'src/dtos/project.dto';
+import { PaginatedResponse } from 'src/dtos/types';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { Project, ProjectRepo } from 'src/entities/Project.entity';
@@ -33,7 +36,7 @@ export class IssueService {
     if (createIssueDto.state) {
       state = await this.issueStateRepo.findOneOrFail({
         project,
-        name: createIssueDto.state,
+        id: createIssueDto.state,
       });
     }
 
@@ -43,7 +46,8 @@ export class IssueService {
     if (createIssueDto.assignees_id?.length) {
       for (const assigneeId of createIssueDto.assignees_id) {
         const pm = await this.projectMemberRepo.findOneOrFail({
-          id: assigneeId,
+          user: assigneeId,
+          project: issue.Project.id,
         });
         issue.assignees.add(pm.user);
       }
@@ -56,13 +60,35 @@ export class IssueService {
     return wrap(issue).toObject();
   }
 
-  async getIssues(projectId: string): Promise<IssueDto[]> {
+  async getIssues(
+    projectId: string,
+    filter: IssueFilterQuery,
+  ): Promise<PaginatedResponse<IssueDto>> {
     const project = await this.projectRepo.findOneOrFail({ id: projectId });
-    const issues = await this.issueRepo.find(
-      { Project: project },
-      { populate: ['state', 'Project'], orderBy: { created_at: 'ASC' } },
+    const { page = 0, pageSize = 25, ...restFilter } = filter;
+    const [issues, total] = await this.issueRepo.findAndCount(
+      {
+        Project: project,
+        $and: [
+          {
+            ...restFilter,
+          },
+        ],
+      },
+      {
+        populate: ['state', 'Project', 'assignees'],
+        orderBy: { created_at: 'ASC' },
+        offset: page * pageSize,
+        limit: pageSize,
+      },
     );
-    return issues.map((i) => wrap(i).toObject());
+    console.log({ total, page, pageSize });
+
+    const nextPage = (page + 1) * pageSize < total ? page + 1 : null;
+    return {
+      data: issues.map((i) => wrap(i).toObject()),
+      nextPage,
+    };
   }
 
   async updateIssue(
@@ -78,7 +104,8 @@ export class IssueService {
       issue.assignees.removeAll();
       for (const assigneeId of updateDto.assignees_id) {
         const pm = await this.projectMemberRepo.findOneOrFail({
-          id: assigneeId,
+          user: assigneeId,
+          project: issue.Project.id,
         });
         issue.assignees.add(pm.user);
       }
@@ -87,7 +114,7 @@ export class IssueService {
     if (updateDto.state) {
       const state = await this.issueStateRepo.findOneOrFail({
         project: issue.Project,
-        name: updateDto.state,
+        id: updateDto.state,
       });
       issue.state = state;
     }

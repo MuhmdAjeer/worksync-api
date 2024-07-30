@@ -38,6 +38,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { IssueState } from './entities/IssueState.entity';
 import { ProjectMember } from './entities/ProjectMember.entity';
 import { EventGateway, WsGateway } from './ws/ws.gateway';
+import { SignalGateway } from './ws/signal.gateway';
 // import { EventGateway } from './ws/event.gateway';
 
 @Module({
@@ -96,7 +97,8 @@ import { EventGateway, WsGateway } from './ws/ws.gateway';
       provide: APP_GUARD,
       useClass: ThrottlerGuard,
     },
-    WsGateway,
+    // WsGateway,
+    SignalGateway,
     IssueService,
     AppService,
     OnboardingService,

@@ -1,6 +1,7 @@
-import { IsUUID } from 'class-validator';
+import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
 import { BaseDto } from './base.dto';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 
 export enum IssueState {
   BACKLOG = 'Backlog',
@@ -15,13 +16,14 @@ export enum IssuePriority {
   HIGH = 'High',
   MEDIUM = 'Medium',
   LOW = 'Low',
+  NONE = 'None',
 }
 
 export class CreateIssueDto {
   title: string;
   description?: string | undefined;
   priority?: IssuePriority;
-  state?: IssueState;
+  state?: string;
   @IsUUID(undefined, { each: true })
   assignees_id?: string[];
   start_date?: Date;
@@ -44,4 +46,28 @@ export enum TStateGroups {
   STARTED = 'started',
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
+}
+
+export class IssueFilterQuery {
+  @IsOptional()
+  @ApiProperty()
+  @IsArray()
+  @IsString({ each: true })
+  state?: string[];
+
+  @IsOptional()
+  @IsString()
+  priority?: IssuePriority;
+
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  assignees?: string[];
+
+  @IsOptional()
+  @Type(() => Number)
+  page?: number;
+  @IsOptional()
+  @Type(() => Number)
+  pageSize?: number;
 }

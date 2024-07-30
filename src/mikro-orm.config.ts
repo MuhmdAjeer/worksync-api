@@ -3,6 +3,7 @@ import { defineConfig, Platform, Type, TextType } from '@mikro-orm/core';
 import { Migrator, TSMigrationGenerator } from '@mikro-orm/migrations';
 import { SeedManager } from '@mikro-orm/seeder';
 import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
+import 'dotenv/config';
 
 export default defineConfig<PostgreSqlDriver>({
   dbName: process.env['DATABASE_NAME'],
@@ -13,6 +14,13 @@ export default defineConfig<PostgreSqlDriver>({
   password: process.env['DATABASE_PASSWORD'],
   debug: true,
   entities: ['dist/**/*.entity.js'],
+  driverOptions: {
+    connection: {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    },
+  },
   entitiesTs: ['src/**/*.entity.ts'],
   metadataProvider: TsMorphMetadataProvider,
   discovery: {
@@ -24,7 +32,6 @@ export default defineConfig<PostgreSqlDriver>({
       return platform.getDefaultMappedType(type);
     },
   },
-
   migrations: {
     path: 'dist/migrations',
     pathTs: 'src/migrations',
