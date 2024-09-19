@@ -24,7 +24,7 @@ export class AuthController {
     private readonly jwtService: JwtService,
   ) {}
 
-  private readonly logger = new Logger('auth controller');
+  private readonly logger = new Logger('auth new  controller');
 
   @Post('register')
   @ApiBadRequestResponse({ type: BadRequestException })

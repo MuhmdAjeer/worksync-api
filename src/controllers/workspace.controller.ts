@@ -1,4 +1,3 @@
-import { Mapper } from '@automapper/core';
 import {
   Body,
   Controller,
@@ -7,10 +6,13 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { ApiExtraModels } from '@nestjs/swagger';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
+import { InvitationDto, InvitationQuery } from 'src/dtos/invitation.dto';
 import { ProjectDto, createProjectDto } from 'src/dtos/project.dto';
 import { InviteMembersDto, WorkspaceMemberDto } from 'src/dtos/workspace.dto';
 import { Project } from 'src/entities/Project.entity';
@@ -75,5 +77,15 @@ export class WorkspaceController {
   @Get('/users')
   async listUsers() {
     return await this.workspaceService.listUsers();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @ApiExtraModels(InvitationQuery)
+  @Get(':slug/invitations')
+  async getInvitations(
+    @Param('slug') slug: string,
+    @Query() query: InvitationQuery,
+  ): Promise<InvitationDto[]> {
+    return await this.inviteService.getInvites(slug, query);
   }
 }

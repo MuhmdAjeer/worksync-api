@@ -6,10 +6,14 @@ import { Invitation, InvitationRepo } from 'src/entities/Invitation.entity';
 import { Workspace, WorkspaceRepo } from 'src/entities/Workspace.entity';
 import { MailService } from './mail.service';
 import { ClsService } from 'nestjs-cls';
-import { AcceptInvitationsDto } from 'src/dtos/invitation.dto';
+import {
+  AcceptInvitationsDto,
+  InvitationDto,
+  InvitationQuery,
+} from 'src/dtos/invitation.dto';
 import { User, UserRepo } from 'src/entities/User.entity';
 import { WorkspaceMember } from 'src/entities/WorkspaceMember.entity';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager, wrap } from '@mikro-orm/postgresql';
 
 @Injectable()
 export class InviteService {
@@ -89,5 +93,19 @@ export class InviteService {
 
       this.em.persistAndFlush([workspace, invitation, member]);
     }
+  }
+
+  public async getInvites(
+    slug: string,
+    query: InvitationQuery,
+  ): Promise<InvitationDto[]> {
+    const invitations = await this.invitationRepo.find(
+      {
+        workspace: { name: slug },
+        is_accepted: query.is_accepted,
+      },
+      { populate: ['*'] },
+    );
+    return invitations.map((x) => wrap(x).toObject());
   }
 }

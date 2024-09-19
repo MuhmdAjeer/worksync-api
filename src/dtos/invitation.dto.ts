@@ -1,8 +1,6 @@
-import { Workspace } from 'src/entities/Workspace.entity';
 import { BaseDto } from './base.dto';
 import { EUserWorkspaceRoles, WorkspaceDto } from './workspace.dto';
-import { IsArray, IsUUID } from 'class-validator';
-import { EUserProjectRoles } from './project.dto';
+import { IsBooleanString, IsOptional, IsUUID } from 'class-validator';
 
 export class InvitationDto extends BaseDto {
   email: string;
@@ -14,4 +12,10 @@ export class InvitationDto extends BaseDto {
 export class AcceptInvitationsDto {
   @IsUUID(undefined, { each: true })
   invitations: string[];
+}
+
+export class InvitationQuery {
+  @IsBooleanString()
+  @IsOptional()
+  is_accepted?: boolean;
 }

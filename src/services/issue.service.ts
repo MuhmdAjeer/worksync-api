@@ -65,7 +65,7 @@ export class IssueService {
     filter: IssueFilterQuery,
   ): Promise<PaginatedResponse<IssueDto>> {
     const project = await this.projectRepo.findOneOrFail({ id: projectId });
-    const { page = 0, pageSize = 25, ...restFilter } = filter;
+    const { page, pageSize, ...restFilter } = filter;
     const [issues, total] = await this.issueRepo.findAndCount(
       {
         Project: project,
@@ -76,15 +76,16 @@ export class IssueService {
         ],
       },
       {
-        populate: ['state', 'Project', 'assignees'],
+        populate: ['Project', 'assignees'],
         orderBy: { created_at: 'ASC' },
-        offset: page * pageSize,
-        limit: pageSize,
+        ...(page && pageSize && { offset: page * pageSize }),
+        ...(pageSize && { limit: pageSize }),
       },
     );
     console.log({ total, page, pageSize });
 
-    const nextPage = (page + 1) * pageSize < total ? page + 1 : null;
+    const nextPage =
+      page && pageSize ? ((page + 1) * pageSize < total ? page + 1 : null) : 0;
     return {
       data: issues.map((i) => wrap(i).toObject()),
       nextPage,
