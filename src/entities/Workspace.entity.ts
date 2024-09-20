@@ -14,7 +14,7 @@ import { WorkspaceMember } from './WorkspaceMember.entity';
 export class Workspace extends Base {
   [EntityRepositoryType]?: WorkspaceRepo;
 
-  @Property({ unique: true })
+  @Property({ unique: true, index: true })
   name: string;
 
   @Property()

@@ -8,7 +8,6 @@ import { CreateUserDto } from 'src/dtos/CreateUserDto';
 import { User, UserRepo } from 'src/entities/User.entity';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { ConfigService } from '@nestjs/config';
 import * as speakeasy from 'speakeasy';
 import { OTP, OtpRepo } from 'src/entities/Otp.entity';
 import {
@@ -22,7 +21,6 @@ export class AuthService {
   constructor(
     private userRepo: UserRepo,
     private readonly jwtService: JwtService,
-    private configSvc: ConfigService,
     private otpRepo: OtpRepo,
     private mailSvc: MailService,
   ) {}

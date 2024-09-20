@@ -33,22 +33,11 @@ import { UserController } from './controllers/user.controller';
 import { UserService } from './services/user.service';
 import { InviteService } from './services/invite.service';
 import { InvitationController } from './controllers/invitation.controller';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
 import { IssueState } from './entities/IssueState.entity';
 import { ProjectMember } from './entities/ProjectMember.entity';
-import { EventGateway, WsGateway } from './ws/ws.gateway';
-import { SignalGateway } from './ws/signal.gateway';
-// import { EventGateway } from './ws/event.gateway';
 
 @Module({
   imports: [
-    ThrottlerModule.forRoot([
-      {
-        ttl: 60000,
-        limit: 100,
-      },
-    ]),
     MikroOrmModule.forRoot(config),
     MikroOrmModule.forFeature({
       entities: [
@@ -93,12 +82,6 @@ import { SignalGateway } from './ws/signal.gateway';
     InvitationController,
   ],
   providers: [
-    {
-      provide: APP_GUARD,
-      useClass: ThrottlerGuard,
-    },
-    // WsGateway,
-    SignalGateway,
     IssueService,
     AppService,
     OnboardingService,

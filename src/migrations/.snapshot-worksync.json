@@ -433,6 +433,16 @@
             "name"
           ],
           "composite": false,
+          "keyName": "workspace_name_index",
+          "constraint": false,
+          "primary": false,
+          "unique": false
+        },
+        {
+          "columnNames": [
+            "name"
+          ],
+          "composite": false,
           "keyName": "workspace_name_unique",
           "constraint": true,
           "primary": false,

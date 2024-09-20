@@ -12,20 +12,22 @@ import {
   WorkspaceMemberDto,
 } from 'src/dtos/workspace.dto';
 import { InviteService } from './invite.service';
-import { WorkspaceMember } from 'src/entities/WorkspaceMember.entity';
-import { EntityManager, wrap } from '@mikro-orm/postgresql';
+import {
+  WorkspaceMember,
+  WorkspaceMemberRepo,
+} from 'src/entities/WorkspaceMember.entity';
+import { EntityManager } from '@mikro-orm/postgresql';
 @Injectable()
 export class WorkspaceService {
   constructor(
     private workspaceRepo: WorkspaceRepo,
-    private invitationRepo: InvitationRepo,
     private clsService: ClsService,
     private userRepo: UserRepo,
     private mailSvc: MailService,
     private inviteSvc: InviteService,
     private em: EntityManager,
+    private memberRepo: WorkspaceMemberRepo,
   ) {}
-  private readonly logger = new Logger('workspace svc');
 
   async create(createWorkspaceDto: CreateWorkspaceDto) {
     const user = this.clsService.get<User>('reqUser');
@@ -61,13 +63,11 @@ export class WorkspaceService {
     return;
   }
 
-  async getUserWorkspaces() {
+  async getUserWorkspaces(): Promise<WorkspaceDto[]> {
     const { id } = this.clsService.get<User>('reqUser');
-    const user = await this.userRepo.findOneOrFail(
-      { id },
-      { populate: ['workspaces.workspace'] },
-    );
-    const workspaces = user.workspaces.getItems().map((wm) => wm.workspace);
+    const user = await this.userRepo.findOneOrFail({ id });
+    // const workspaces = user.workspaces.getItems().map((wm) => wm.workspace);
+    const workspaces = await this.workspaceRepo.find({ members: { user } });
     return workspaces;
   }
 
@@ -82,16 +82,13 @@ export class WorkspaceService {
       { populate: ['members'] },
     );
     await this.inviteSvc.inviteMembers(workspace, inviteDto);
-    this.logger.debug('HYYYYY TIS ONE');
     return;
   }
 
   async getMembers(slug: string): Promise<WorkspaceMemberDto[]> {
-    const workspace = await this.workspaceRepo.findOneOrFail(
-      { name: slug },
-      { populate: ['members.user'] },
-    );
-    return workspace.members.map((m) => wrap(m).toObject());
+    return await this.memberRepo.find({
+      workspace: { name: slug },
+    });
   }
 
   async listUsers() {

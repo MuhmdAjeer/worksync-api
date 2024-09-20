@@ -13,12 +13,6 @@ async function bootstrap() {
     logger: new Logger(),
     cors: true,
   });
-  // app.enableCors({
-  //   origin: 'http://localhost:3000',
-  //   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  //   credentials: true,
-  //   preflightContinue: true,
-  // });
   app.useGlobalPipes(new ValidationPipe());
   const config = new DocumentBuilder()
     .setTitle('Auth API')

@@ -4,13 +4,11 @@ import {
   Entity,
   EntityRepository,
   EntityRepositoryType,
-  ManyToMany,
   OneToMany,
   Property,
 } from '@mikro-orm/core';
 import * as bcrypt from 'bcrypt';
 import { Base } from './base.entity';
-import { Project } from './Project.entity';
 import { WorkspaceMember } from './WorkspaceMember.entity';
 import { OnboardMeta } from 'src/dtos/user.dto';
 
