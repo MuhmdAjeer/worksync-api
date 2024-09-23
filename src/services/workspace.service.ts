@@ -86,9 +86,12 @@ export class WorkspaceService {
   }
 
   async getMembers(slug: string): Promise<WorkspaceMemberDto[]> {
-    return await this.memberRepo.find({
-      workspace: { name: slug },
-    });
+    return await this.memberRepo.find(
+      {
+        workspace: { name: slug },
+      },
+      { populate: ['user'] },
+    );
   }
 
   async listUsers() {

@@ -98,14 +98,11 @@ export class InviteService {
   public async getInvites(
     slug: string,
     query: InvitationQuery,
-  ): Promise<InvitationDto[]> {
-    const invitations = await this.invitationRepo.find(
-      {
-        workspace: { name: slug },
-        is_accepted: query.is_accepted,
-      },
-      { populate: ['*'] },
-    );
-    return invitations.map((x) => wrap(x).toObject());
+  ): Promise<Invitation[]> {
+    const invitations = await this.invitationRepo.find({
+      workspace: { name: slug },
+      is_accepted: query.is_accepted,
+    });
+    return invitations;
   }
 }

@@ -1,27 +1,24 @@
-import { ref, wrap } from '@mikro-orm/core';
+import { wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import {
   CreateIssueDto,
   IssueFilterQuery,
-  IssuePriority,
-  IssueStateDto,
   UpdateIssueDto,
 } from 'src/dtos/Issue.dto';
 import { IssueDto } from 'src/dtos/project.dto';
 import { PaginatedResponse } from 'src/dtos/types';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
-import { Project, ProjectRepo } from 'src/entities/Project.entity';
+import { ProjectRepo } from 'src/entities/Project.entity';
 import { ProjectMemberRepo } from 'src/entities/ProjectMember.entity';
-import { User, UserRepo } from 'src/entities/User.entity';
+import { User } from 'src/entities/User.entity';
 
 @Injectable()
 export class IssueService {
   constructor(
     private issueRepo: IssueRepo,
     private issueStateRepo: IssueStateRepo,
-    private userRepo: UserRepo,
     private clsService: ClsService,
     private projectRepo: ProjectRepo,
     private projectMemberRepo: ProjectMemberRepo,
@@ -63,7 +60,7 @@ export class IssueService {
   async getIssues(
     projectId: string,
     filter: IssueFilterQuery,
-  ): Promise<PaginatedResponse<IssueDto>> {
+  ): Promise<PaginatedResponse<Issue>> {
     const project = await this.projectRepo.findOneOrFail({ id: projectId });
     const { page, pageSize, ...restFilter } = filter;
     const [issues, total] = await this.issueRepo.findAndCount(
@@ -82,12 +79,11 @@ export class IssueService {
         ...(pageSize && { limit: pageSize }),
       },
     );
-    console.log({ total, page, pageSize });
 
     const nextPage =
       page && pageSize ? ((page + 1) * pageSize < total ? page + 1 : null) : 0;
     return {
-      data: issues.map((i) => wrap(i).toObject()),
+      data: issues,
       nextPage,
     };
   }

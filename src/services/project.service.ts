@@ -1,12 +1,6 @@
-import {
-  EntityDTO,
-  EntityTransformer,
-  ref,
-  serialize,
-  wrap,
-} from '@mikro-orm/core';
+import { ref, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { states } from 'src/constants/project';
 import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
@@ -30,7 +24,6 @@ export class ProjectService {
     private issueStateRepo: IssueStateRepo,
     private em: EntityManager,
   ) {}
-  private readonly logger = new Logger(ProjectService.name);
 
   async create(
     slug: string,
@@ -63,17 +56,17 @@ export class ProjectService {
     return wrap(project).toObject();
   }
 
-  async findProjectsByWorkspace(workspaceId: string): Promise<ProjectDto[]> {
+  async findProjectsByWorkspace(workspaceId: string): Promise<Project[]> {
     const workspace = await this.workspaceRepo.findOneOrFail({
       name: workspaceId,
     });
 
     const projects = await this.projectRepo.find(
       { workspace },
-      { populate: ['workspace', 'members', 'issues', 'labels', 'states'] },
+      { populate: ['workspace', 'states'] },
     );
 
-    return projects.map((x) => wrap(x).toObject());
+    return projects;
   }
 
   async findProjectById(id: string): Promise<ProjectDto> {

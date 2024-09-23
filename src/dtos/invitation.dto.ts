@@ -1,6 +1,12 @@
+import { Transform } from 'class-transformer';
 import { BaseDto } from './base.dto';
 import { EUserWorkspaceRoles, WorkspaceDto } from './workspace.dto';
-import { IsBooleanString, IsOptional, IsUUID } from 'class-validator';
+import {
+  IsBoolean,
+  IsBooleanString,
+  IsOptional,
+  IsUUID,
+} from 'class-validator';
 
 export class InvitationDto extends BaseDto {
   email: string;
@@ -15,7 +21,12 @@ export class AcceptInvitationsDto {
 }
 
 export class InvitationQuery {
-  @IsBooleanString()
+  @IsBoolean()
   @IsOptional()
-  is_accepted?: boolean;
+  @Transform(({ value }) => {
+    if (value === 'true') return true;
+    if (value === 'false') return false;
+    return null;
+  })
+  is_accepted?: boolean | null;
 }
