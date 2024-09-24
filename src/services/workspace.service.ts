@@ -8,6 +8,7 @@ import { MailService } from './mail.service';
 import {
   EUserWorkspaceRoles,
   InviteMembersDto,
+  MembersFilterQuery,
   WorkspaceDto,
   WorkspaceMemberDto,
 } from 'src/dtos/workspace.dto';
@@ -85,10 +86,16 @@ export class WorkspaceService {
     return;
   }
 
-  async getMembers(slug: string): Promise<WorkspaceMemberDto[]> {
+  async getMembers(
+    slug: string,
+    filter: MembersFilterQuery,
+  ): Promise<WorkspaceMemberDto[]> {
     return await this.memberRepo.find(
       {
         workspace: { name: slug },
+        ...(filter.username && {
+          user: { username: { $ilike: `%${filter.username}%` } },
+        }),
       },
       { populate: ['user'] },
     );

@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { BaseDto } from './base.dto';
 import { UserDto } from './user.dto';
 import { ApiProperty } from '@nestjs/swagger';
@@ -25,11 +25,17 @@ export class InviteMembersDto {
   emails: InviteMemberDto[];
 }
 
-class InviteMemberDto {
+export class InviteMemberDto {
   email: string;
 
   @IsEnum(EUserWorkspaceRoles)
   @IsNotEmpty()
   @ApiProperty({ enum: EUserWorkspaceRoles })
   role: EUserWorkspaceRoles;
+}
+
+export class MembersFilterQuery {
+  @IsOptional()
+  @IsString()
+  username?: string;
 }

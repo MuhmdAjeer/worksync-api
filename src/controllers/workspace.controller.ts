@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Logger,
   Param,
@@ -11,10 +12,20 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiExtraModels } from '@nestjs/swagger';
+import { query } from 'express';
+import { UuidParam } from 'src/decorators';
 import { CreateWorkspaceDto } from 'src/dtos/CreateWorkspaceDto';
-import { InvitationDto, InvitationQuery } from 'src/dtos/invitation.dto';
+import {
+  InvitationDto,
+  InvitationQuery,
+  UpdateInvitationDto,
+} from 'src/dtos/invitation.dto';
 import { ProjectDto, createProjectDto } from 'src/dtos/project.dto';
-import { InviteMembersDto, WorkspaceMemberDto } from 'src/dtos/workspace.dto';
+import {
+  InviteMembersDto,
+  MembersFilterQuery,
+  WorkspaceMemberDto,
+} from 'src/dtos/workspace.dto';
 import { Invitation } from 'src/entities/Invitation.entity';
 import { Project } from 'src/entities/Project.entity';
 import { JwtAuthGuard } from 'src/guards';
@@ -66,8 +77,12 @@ export class WorkspaceController {
 
   @UseGuards(JwtAuthGuard)
   @Get(':slug/members')
-  async getMembers(@Param('slug') slug: string) {
-    return await this.workspaceService.getMembers(slug);
+  @ApiExtraModels(MembersFilterQuery)
+  async getMembers(
+    @Param('slug') slug: string,
+    @Query() filter: MembersFilterQuery,
+  ) {
+    return await this.workspaceService.getMembers(slug, filter);
   }
 
   @Post(':slug/project')
@@ -89,5 +104,20 @@ export class WorkspaceController {
   ): Promise<Invitation[]> {
     this.logger.log({ slug, query });
     return await this.inviteService.getInvites(slug, query);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':slug/invitation/:invitationId')
+  async updateInvitation(
+    @UuidParam('invitationId') invitationId: string,
+    @Body() updateDto: UpdateInvitationDto,
+  ) {
+    return await this.inviteService.updateInvite(invitationId, updateDto);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Delete(':slug/invitation/:invitationId')
+  async removeInvitation(@UuidParam('invitationId') inviteId: string) {
+    return await this.inviteService.removeInvite(inviteId);
   }
 }

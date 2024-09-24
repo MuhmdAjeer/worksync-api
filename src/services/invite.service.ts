@@ -10,6 +10,7 @@ import {
   AcceptInvitationsDto,
   InvitationDto,
   InvitationQuery,
+  UpdateInvitationDto,
 } from 'src/dtos/invitation.dto';
 import { User, UserRepo } from 'src/entities/User.entity';
 import { WorkspaceMember } from 'src/entities/WorkspaceMember.entity';
@@ -99,10 +100,23 @@ export class InviteService {
     slug: string,
     query: InvitationQuery,
   ): Promise<Invitation[]> {
-    const invitations = await this.invitationRepo.find({
-      workspace: { name: slug },
-      is_accepted: query.is_accepted,
-    });
+    const invitations = await this.invitationRepo.find(
+      {
+        workspace: { name: slug },
+        is_accepted: query.is_accepted,
+      },
+      { orderBy: { created_at: 'ASC' } },
+    );
     return invitations;
+  }
+
+  public async updateInvite(inviteId: string, updateDto: UpdateInvitationDto) {
+    const invitation = this.em.getReference(Invitation, inviteId);
+    this.em.assign(invitation, updateDto);
+    this.em.flush();
+  }
+
+  public async removeInvite(inviteId: string) {
+    await this.invitationRepo.nativeDelete({ id: inviteId });
   }
 }

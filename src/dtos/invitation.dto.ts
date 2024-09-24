@@ -1,13 +1,12 @@
 import { Transform } from 'class-transformer';
 import { BaseDto } from './base.dto';
-import { EUserWorkspaceRoles, WorkspaceDto } from './workspace.dto';
 import {
-  IsBoolean,
-  IsBooleanString,
-  IsOptional,
-  IsUUID,
-} from 'class-validator';
-
+  EUserWorkspaceRoles,
+  InviteMemberDto,
+  WorkspaceDto,
+} from './workspace.dto';
+import { IsBoolean, IsOptional, IsUUID } from 'class-validator';
+import { PartialType } from '@nestjs/swagger';
 export class InvitationDto extends BaseDto {
   email: string;
   workspace: WorkspaceDto;
@@ -30,3 +29,5 @@ export class InvitationQuery {
   })
   is_accepted?: boolean | null;
 }
+
+export class UpdateInvitationDto extends PartialType(InviteMemberDto) {}
