@@ -24,4 +24,9 @@ export class UserController {
   async updateUserProfile(@Body() updateDto: Partial<UserDto>) {
     return await this.userService.updateProfile(updateDto);
   }
+  @UseGuards(JwtAuthGuard)
+  @Get('/me/projects')
+  async getMyProjects() {
+    return await this.userService.getProjects();
+  }
 }
