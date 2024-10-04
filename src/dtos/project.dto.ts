@@ -1,5 +1,5 @@
 import { BaseDto } from './base.dto';
-import { IsNotEmpty, IsUUID } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsUUID } from 'class-validator';
 import { IssuePriority, IssueStateDto } from './Issue.dto';
 import { WorkspaceDto } from './workspace.dto';
 import { UserDto } from './user.dto';
@@ -54,4 +54,14 @@ export enum EUserProjectRoles {
   ADMIN = 'ADMIN',
   MEMBER = 'MEMBER',
   GUEST = 'GUEST',
+}
+class PMemberDto {
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
+  @IsEnum(EUserProjectRoles)
+  role: EUserProjectRoles;
+}
+export class AddMemberDto {
+  members: PMemberDto[];
 }

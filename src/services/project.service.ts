@@ -1,17 +1,21 @@
 import { ref, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { states } from 'src/constants/project';
 import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
+  AddMemberDto,
   EUserProjectRoles,
   ProjectDto,
-  ProjectMemberDto,
   createProjectDto,
 } from 'src/dtos/project.dto';
+import { MembersFilterQuery } from 'src/dtos/workspace.dto';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { Project, ProjectRepo } from 'src/entities/Project.entity';
-import { ProjectMember } from 'src/entities/ProjectMember.entity';
+import {
+  ProjectMember,
+  ProjectMemberRepo,
+} from 'src/entities/ProjectMember.entity';
 import { UserRepo } from 'src/entities/User.entity';
 import { WorkspaceRepo } from 'src/entities/Workspace.entity';
 
@@ -23,6 +27,7 @@ export class ProjectService {
     private projectRepo: ProjectRepo,
     private issueStateRepo: IssueStateRepo,
     private em: EntityManager,
+    private memberRepo: ProjectMemberRepo,
   ) {}
 
   async create(
@@ -80,11 +85,35 @@ export class ProjectService {
     return states;
   }
 
-  async getMembers(id: string): Promise<ProjectMemberDto[]> {
-    const project = await this.projectRepo.findOneOrFail(
-      { id },
-      { populate: ['members.user'] },
+  async getMembers(
+    id: string,
+    filter: MembersFilterQuery,
+  ): Promise<ProjectMember[]> {
+    return await this.memberRepo.find(
+      {
+        project: { id },
+        ...(filter.username && {
+          user: { username: { $ilike: `%${filter.username}%` } },
+        }),
+      },
+      { populate: ['user'] },
     );
-    return project.members.map((pm) => wrap(pm).toObject());
+  }
+
+  async addMembers(projectId: string, addMemberDto: AddMemberDto) {
+    const project = await this.projectRepo.findOneOrFail({ id: projectId });
+    for (const member of addMemberDto.members) {
+      const user = await this.userRepo.findOneOrFail({ id: member.userId });
+      const pmExist = await this.memberRepo.findOne({ user, project });
+      if (pmExist) {
+        continue;
+      }
+      const pm = new ProjectMember({
+        user,
+        role: member.role,
+        project: ref(project),
+      });
+      this.em.persistAndFlush(pm);
+    }
   }
 }
