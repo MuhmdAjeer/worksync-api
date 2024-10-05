@@ -81,7 +81,11 @@ export class IssueService {
     );
 
     const nextPage =
-      page && pageSize ? ((page + 1) * pageSize < total ? page + 1 : null) : 0;
+      page !== undefined && page !== null && pageSize
+        ? (page + 1) * pageSize < total
+          ? page + 1
+          : null
+        : 0;
     return {
       data: issues,
       nextPage,

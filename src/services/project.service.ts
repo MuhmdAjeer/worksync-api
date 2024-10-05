@@ -1,6 +1,7 @@
 import { ref, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
 import { ConflictException, Injectable } from '@nestjs/common';
+import { ClsService } from 'nestjs-cls';
 import { states } from 'src/constants/project';
 import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
@@ -9,6 +10,7 @@ import {
   ProjectDto,
   createProjectDto,
 } from 'src/dtos/project.dto';
+import { UserDto } from 'src/dtos/user.dto';
 import { MembersFilterQuery } from 'src/dtos/workspace.dto';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { Project, ProjectRepo } from 'src/entities/Project.entity';
@@ -28,6 +30,7 @@ export class ProjectService {
     private issueStateRepo: IssueStateRepo,
     private em: EntityManager,
     private memberRepo: ProjectMemberRepo,
+    private clsService: ClsService,
   ) {}
 
   async create(
@@ -37,27 +40,39 @@ export class ProjectService {
     const workspace = await this.workspaceRepo.findOneOrFail({
       name: slug,
     });
-
+    const clsUser = this.clsService.get<UserDto>('reqUser');
+    const user = await this.userRepo.findOneOrFail({ id: clsUser.id });
     const project = new Project(projectDto);
-    const lead = await this.userRepo.findOneOrFail({ id: projectDto.lead_id });
+    let lead = user;
+    if (user.id !== projectDto.lead_id) {
+      lead = await this.userRepo.findOneOrFail({
+        id: projectDto.lead_id,
+      });
+    }
 
     project.workspace = workspace;
     project.lead = lead;
-
     const projectMember = new ProjectMember({
       project: ref(project),
-      // project,
       role: EUserProjectRoles.ADMIN,
-      user: lead,
+      user,
     });
     project.members.add(projectMember);
+    if (user.id !== lead.id) {
+      const projectMember = new ProjectMember({
+        project: ref(project),
+        role: EUserProjectRoles.ADMIN,
+        user: lead,
+      });
+      project.members.add(projectMember);
+    }
 
     for (const state of states) {
       const issueState = new IssueState({ ...state, project: ref(project) });
       project.states.add(issueState);
     }
 
-    this.em.persistAndFlush([project, projectMember]);
+    this.em.persistAndFlush([project]);
     return wrap(project).toObject();
   }
 
@@ -65,9 +80,10 @@ export class ProjectService {
     const workspace = await this.workspaceRepo.findOneOrFail({
       name: workspaceId,
     });
+    const user = this.clsService.get<UserDto>('reqUser');
 
     const projects = await this.projectRepo.find(
-      { workspace },
+      { workspace, members: { user: { id: user.id } } },
       { populate: ['workspace', 'states'] },
     );
 

@@ -85,6 +85,7 @@ export class WorkspaceController {
     return await this.workspaceService.getMembers(slug, filter);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post(':slug/project')
   async create(@Body() body: createProjectDto, @Param('slug') slug: string) {
     return await this.projectSvc.create(slug, body);
