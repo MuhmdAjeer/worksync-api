@@ -31,7 +31,7 @@ export class Issue extends Base {
   @Property({ nullable: true })
   description?: string;
 
-  @ManyToOne(() => Project, { inversedBy: 'issues' })
+  @ManyToOne(() => Project, { inversedBy: 'issues', deleteRule: 'cascade ' })
   Project: Project;
 
   @ManyToOne(() => User)

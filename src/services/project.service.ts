@@ -8,6 +8,7 @@ import {
   AddMemberDto,
   EUserProjectRoles,
   ProjectDto,
+  UpdateProjectDto,
   createProjectDto,
 } from 'src/dtos/project.dto';
 import { UserDto } from 'src/dtos/user.dto';
@@ -131,5 +132,15 @@ export class ProjectService {
       });
       this.em.persistAndFlush(pm);
     }
+  }
+
+  async updateProject(projectId: string, updateDto: UpdateProjectDto) {
+    const project = await this.projectRepo.findOneOrFail({ id: projectId });
+    wrap(project).assign(updateDto);
+    this.em.flush();
+  }
+
+  async deleteProject(id: string) {
+    await this.projectRepo.nativeDelete({ id });
   }
 }

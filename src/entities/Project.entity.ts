@@ -1,4 +1,5 @@
 import {
+  Cascade,
   Collection,
   Entity,
   EntityRepository,
@@ -46,7 +47,7 @@ export class Project extends Base {
   @ManyToOne(() => User)
   lead: User;
 
-  @OneToMany(() => ProjectMember, (pm) => pm.project)
+  @OneToMany(() => ProjectMember, (pm) => pm.project, {})
   members = new Collection<ProjectMember>(this);
 
   @Property({ nullable: true, default: null })

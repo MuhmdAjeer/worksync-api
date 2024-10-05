@@ -1,6 +1,14 @@
-import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { UuidParam } from 'src/decorators';
-import { AddMemberDto } from 'src/dtos/project.dto';
+import { AddMemberDto, UpdateProjectDto } from 'src/dtos/project.dto';
 import { MembersFilterQuery } from 'src/dtos/workspace.dto';
 import { ProjectService } from 'src/services/project.service';
 
@@ -11,6 +19,14 @@ export class ProjectsController {
   @Get('/:id')
   async getProject(@UuidParam('id') id: string) {
     return await this.projectSvc.findProjectById(id);
+  }
+
+  @Patch('/:id/')
+  async updateProject(
+    @UuidParam('id') id: string,
+    @Body() updateDto: UpdateProjectDto,
+  ) {
+    return await this.projectSvc.updateProject(id, updateDto);
   }
 
   @Get('/:id/states')
@@ -32,5 +48,10 @@ export class ProjectsController {
     @Body() addMemberDto: AddMemberDto,
   ) {
     return await this.projectSvc.addMembers(id, addMemberDto);
+  }
+
+  @Delete('/:id')
+  async deleteProject(@UuidParam('id') id: string) {
+    return await this.projectSvc.deleteProject(id);
   }
 }

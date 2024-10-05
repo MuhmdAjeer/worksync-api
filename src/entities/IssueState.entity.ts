@@ -34,7 +34,7 @@ export class IssueState extends Base {
   @Property({ nullable: true })
   description?: string;
 
-  @ManyToOne()
+  @ManyToOne({ deleteRule: 'cascade' })
   project: Ref<Project>;
 
   constructor(obj: Partial<IssueState>) {

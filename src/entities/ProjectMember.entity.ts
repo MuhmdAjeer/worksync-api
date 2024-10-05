@@ -21,7 +21,7 @@ export class ProjectMember extends Base {
   @ManyToOne(() => User)
   user!: User;
 
-  @ManyToOne()
+  @ManyToOne({ deleteRule: 'cascade' })
   project: Ref<Project>;
 
   @Enum(() => EUserProjectRoles)

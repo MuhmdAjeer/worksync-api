@@ -3,6 +3,7 @@ import { IsEnum, IsNotEmpty, IsUUID } from 'class-validator';
 import { IssuePriority, IssueStateDto } from './Issue.dto';
 import { WorkspaceDto } from './workspace.dto';
 import { UserDto } from './user.dto';
+import { PartialType } from '@nestjs/swagger';
 
 export class ProjectDto extends BaseDto {
   name: string;
@@ -43,6 +44,8 @@ export class createProjectDto {
   cover_image?: string;
   logo?: string;
 }
+
+export class UpdateProjectDto extends PartialType(createProjectDto) {}
 
 export class ProjectMemberDto extends BaseDto {
   user: UserDto;

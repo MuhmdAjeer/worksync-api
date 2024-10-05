@@ -18,7 +18,7 @@ export class IssueLabel extends Base {
   @Property()
   color: string;
 
-  @ManyToOne(() => Project, { inversedBy: 'labels' })
+  @ManyToOne(() => Project, { inversedBy: 'labels', deleteRule: 'cascade' })
   Project: Project;
   constructor(obj: Partial<IssueLabel>) {
     super();
