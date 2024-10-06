@@ -35,6 +35,7 @@ import { InviteService } from './services/invite.service';
 import { InvitationController } from './controllers/invitation.controller';
 import { IssueState } from './entities/IssueState.entity';
 import { ProjectMember } from './entities/ProjectMember.entity';
+import { IssueLabel } from './entities/IssueLabels.entity';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ProjectMember } from './entities/ProjectMember.entity';
         Issue,
         IssueState,
         ProjectMember,
+        IssueLabel,
       ],
     }),
 

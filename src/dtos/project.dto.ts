@@ -68,3 +68,12 @@ class PMemberDto {
 export class AddMemberDto {
   members: PMemberDto[];
 }
+
+export class AddLabelDto {
+  @IsNotEmpty()
+  name: string;
+  @IsNotEmpty()
+  color: string;
+}
+
+export class UpdateLabelDto extends PartialType(AddLabelDto) {}

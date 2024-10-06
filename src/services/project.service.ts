@@ -5,14 +5,17 @@ import { ClsService } from 'nestjs-cls';
 import { states } from 'src/constants/project';
 import { IssueStateDto } from 'src/dtos/Issue.dto';
 import {
+  AddLabelDto,
   AddMemberDto,
   EUserProjectRoles,
   ProjectDto,
+  UpdateLabelDto,
   UpdateProjectDto,
   createProjectDto,
 } from 'src/dtos/project.dto';
 import { UserDto } from 'src/dtos/user.dto';
 import { MembersFilterQuery } from 'src/dtos/workspace.dto';
+import { IssueLabel, IssueLabelRepo } from 'src/entities/IssueLabels.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { Project, ProjectRepo } from 'src/entities/Project.entity';
 import {
@@ -32,6 +35,7 @@ export class ProjectService {
     private em: EntityManager,
     private memberRepo: ProjectMemberRepo,
     private clsService: ClsService,
+    private labelRepo: IssueLabelRepo,
   ) {}
 
   async create(
@@ -142,5 +146,29 @@ export class ProjectService {
 
   async deleteProject(id: string) {
     await this.projectRepo.nativeDelete({ id });
+  }
+
+  async addLabel(projectId: string, labelDto: AddLabelDto) {
+    const project = await this.projectRepo.findOneOrFail({ id: projectId });
+    const label = new IssueLabel(labelDto);
+    project.labels.add(label);
+    this.em.flush();
+  }
+
+  async getLabels(projectId: string): Promise<IssueLabel[]> {
+    return await this.labelRepo.find(
+      { Project: projectId },
+      { orderBy: { created_at: 'ASC' } },
+    );
+  }
+
+  async updateLabel(id: string, labelDto: UpdateLabelDto) {
+    const label = await this.labelRepo.findOneOrFail({ id });
+    wrap(label).assign(labelDto);
+    this.em.flush();
+  }
+
+  async removeLabel(id: string) {
+    await this.labelRepo.nativeDelete({ id });
   }
 }
