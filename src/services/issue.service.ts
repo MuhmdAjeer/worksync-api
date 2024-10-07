@@ -9,6 +9,7 @@ import {
 import { IssueDto } from 'src/dtos/project.dto';
 import { PaginatedResponse } from 'src/dtos/types';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
+import { IssueLabel, IssueLabelRepo } from 'src/entities/IssueLabels.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
 import { ProjectRepo } from 'src/entities/Project.entity';
 import { ProjectMemberRepo } from 'src/entities/ProjectMember.entity';
@@ -22,6 +23,7 @@ export class IssueService {
     private clsService: ClsService,
     private projectRepo: ProjectRepo,
     private projectMemberRepo: ProjectMemberRepo,
+    private labelRepo: IssueLabelRepo,
   ) {}
 
   async create(
@@ -30,6 +32,7 @@ export class IssueService {
   ): Promise<IssueDto> {
     const project = await this.projectRepo.findOneOrFail({ id: projectId });
     let state: IssueState | undefined = undefined;
+
     if (createIssueDto.state) {
       state = await this.issueStateRepo.findOneOrFail({
         project,
@@ -39,6 +42,15 @@ export class IssueService {
 
     const issue = new Issue({ ...createIssueDto, state });
     issue.Project = project;
+    if (createIssueDto.label_ids?.length) {
+      for (const labelId of createIssueDto.label_ids) {
+        const label = await this.labelRepo.findOneOrFail({
+          id: labelId,
+          Project: project,
+        });
+        issue.labels.add(label);
+      }
+    }
 
     if (createIssueDto.assignees_id?.length) {
       for (const assigneeId of createIssueDto.assignees_id) {
@@ -73,7 +85,7 @@ export class IssueService {
         ],
       },
       {
-        populate: ['Project', 'assignees'],
+        populate: ['Project', 'assignees', 'labels'],
         orderBy: { created_at: 'ASC' },
         ...(page && pageSize && { offset: page * pageSize }),
         ...(pageSize && { limit: pageSize }),

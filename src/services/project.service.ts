@@ -1,6 +1,6 @@
 import { ref, wrap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/postgresql';
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import { states } from 'src/constants/project';
 import { IssueStateDto } from 'src/dtos/Issue.dto';

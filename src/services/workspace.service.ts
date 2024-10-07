@@ -82,6 +82,7 @@ export class WorkspaceService {
       { name: slug },
       { populate: ['members'] },
     );
+		console.log({workspace:workspace.members})
     await this.inviteSvc.inviteMembers(workspace, inviteDto);
     return;
   }

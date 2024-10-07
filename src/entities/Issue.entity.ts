@@ -18,6 +18,7 @@ import { User } from './User.entity';
 import { Project } from './Project.entity';
 import { IssuePriority } from 'src/dtos/Issue.dto';
 import { IssueState } from './IssueState.entity';
+import { IssueLabel } from './IssueLabels.entity';
 
 @Entity({
   repository: () => IssueRepo,
@@ -42,6 +43,9 @@ export class Issue extends Base {
 
   @ManyToOne(() => IssueState)
   state?: IssueState;
+
+  @ManyToMany({ entity: () => IssueLabel })
+  labels = new Collection<IssueLabel>(this);
 
   @Property()
   start_date?: Date;

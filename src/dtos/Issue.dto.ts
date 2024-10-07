@@ -24,8 +24,14 @@ export class CreateIssueDto {
   description?: string | undefined;
   priority?: IssuePriority;
   state?: string;
+
   @IsUUID(undefined, { each: true })
   assignees_id?: string[];
+
+  @IsUUID(undefined, { each: true })
+  @IsOptional()
+  label_ids?: string[];
+
   start_date?: Date;
   end_date?: Date;
 }
@@ -36,6 +42,11 @@ export class IssueStateDto extends BaseDto {
   @ApiProperty()
   group: TStateGroups;
   description?: string;
+}
+
+export class IssueLabelDto extends BaseDto {
+  name: string;
+  color: string;
 }
 
 export class UpdateIssueDto extends PartialType(CreateIssueDto) {}
