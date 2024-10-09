@@ -14,8 +14,10 @@ import {
 import { ApiExtraModels, ApiQuery } from '@nestjs/swagger';
 import { UuidParam } from 'src/decorators';
 import {
+  AddCommentDto,
   CreateIssueDto,
   IssueFilterQuery,
+  UpdateCommentDto,
   UpdateIssueDto,
 } from 'src/dtos/Issue.dto';
 import { ProjectRepo } from 'src/entities/Project.entity';
@@ -49,5 +51,23 @@ export class IssueController {
   @Patch(':id')
   async updateIssue(@UuidParam('id') id: string, @Body() body: UpdateIssueDto) {
     return this.issueService.updateIssue(id, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post(':id/comment')
+  async addComment(
+    @UuidParam('id') issueId: string,
+    @Body() body: AddCommentDto,
+  ) {
+    return this.issueService.addComment(issueId, body);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch(':id/comment/:commentId')
+  async updateComment(
+    @UuidParam('commentId') commentId: string,
+    @Body() body: UpdateCommentDto,
+  ) {
+    return this.issueService.updateComment(commentId, body);
   }
 }

@@ -36,6 +36,8 @@ import { InvitationController } from './controllers/invitation.controller';
 import { IssueState } from './entities/IssueState.entity';
 import { ProjectMember } from './entities/ProjectMember.entity';
 import { IssueLabel } from './entities/IssueLabels.entity';
+import { Comment } from './entities/Comment.entity';
+import { CommentController } from './controllers/comment.controller';
 
 @Module({
   imports: [
@@ -53,6 +55,7 @@ import { IssueLabel } from './entities/IssueLabels.entity';
         IssueState,
         ProjectMember,
         IssueLabel,
+        Comment,
       ],
     }),
 
@@ -82,6 +85,7 @@ import { IssueLabel } from './entities/IssueLabels.entity';
     IssueController,
     UserController,
     InvitationController,
+    CommentController,
   ],
   providers: [
     IssueService,

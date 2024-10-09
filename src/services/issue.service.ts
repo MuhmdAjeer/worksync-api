@@ -1,13 +1,18 @@
-import { wrap } from '@mikro-orm/core';
+import { ref, wrap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
 import {
+  AddCommentDto,
+  CommentDto,
   CreateIssueDto,
   IssueFilterQuery,
+  UpdateCommentDto,
   UpdateIssueDto,
 } from 'src/dtos/Issue.dto';
 import { IssueDto } from 'src/dtos/project.dto';
 import { PaginatedResponse } from 'src/dtos/types';
+import { UserDto } from 'src/dtos/user.dto';
+import { Comment, CommentRepository } from 'src/entities/Comment.entity';
 import { Issue, IssueRepo } from 'src/entities/Issue.entity';
 import { IssueLabel, IssueLabelRepo } from 'src/entities/IssueLabels.entity';
 import { IssueState, IssueStateRepo } from 'src/entities/IssueState.entity';
@@ -24,6 +29,7 @@ export class IssueService {
     private projectRepo: ProjectRepo,
     private projectMemberRepo: ProjectMemberRepo,
     private labelRepo: IssueLabelRepo,
+    private commentRepo: CommentRepository,
   ) {}
 
   async create(
@@ -134,5 +140,30 @@ export class IssueService {
 
     this.issueRepo.getEntityManager().flush();
     return wrap(issue).toObject();
+  }
+
+  async addComment(issueId: string, addCommentDto: AddCommentDto) {
+    const issue = await this.issueRepo.findOneOrFail({ id: issueId });
+    const user = this.clsService.get<User>('reqUser');
+    const comment = new Comment({
+      issue,
+      user,
+      content: addCommentDto.content,
+    });
+    await this.commentRepo.getEntityManager().persistAndFlush(comment);
+  }
+
+  async updateComment(commentId: string, updateDto: UpdateCommentDto) {
+    const comment = await this.commentRepo.findOneOrFail({ id: commentId });
+    comment.content = updateDto.content;
+    this.commentRepo.getEntityManager().flush();
+  }
+
+  async getComments(issueId: string): Promise<Comment[]> {
+    const issue = await this.issueRepo.findOneOrFail({ id: issueId });
+    return await this.commentRepo.find(
+      { issue },
+      { orderBy: { created_at: 'ASC' }, populate: ['user'] },
+    );
   }
 }

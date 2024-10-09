@@ -1,7 +1,16 @@
-import { IsArray, IsOptional, IsString, IsUUID } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  isString,
+  IsString,
+  IsUUID,
+} from 'class-validator';
 import { BaseDto } from './base.dto';
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
+import { UserDto } from './user.dto';
+import { IssueDto } from './project.dto';
 
 export enum IssueState {
   BACKLOG = 'Backlog',
@@ -82,3 +91,17 @@ export class IssueFilterQuery {
   @Type(() => Number)
   pageSize?: number;
 }
+
+export class CommentDto extends BaseDto {
+  content: string;
+  user: UserDto;
+  issue: IssueDto;
+}
+
+export class AddCommentDto {
+  @IsString()
+  @IsNotEmpty()
+  content: string;
+}
+
+export class UpdateCommentDto extends AddCommentDto {}
