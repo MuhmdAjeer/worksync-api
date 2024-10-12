@@ -35,7 +35,7 @@ export class IssueService {
   async create(
     createIssueDto: CreateIssueDto,
     projectId: string,
-  ): Promise<IssueDto> {
+  ): Promise<Issue> {
     const project = await this.projectRepo.findOneOrFail({ id: projectId });
     let state: IssueState | undefined = undefined;
 
@@ -71,8 +71,7 @@ export class IssueService {
     issue.issued_by = this.clsService.get<User>('reqUser');
 
     await this.issueRepo.getEntityManager().persistAndFlush(issue);
-
-    return wrap(issue).toObject();
+    return issue;
   }
 
   async getIssues(
@@ -113,7 +112,7 @@ export class IssueService {
   async updateIssue(
     issueId: string,
     updateDto: UpdateIssueDto,
-  ): Promise<IssueDto> {
+  ): Promise<Issue> {
     const issue = await this.issueRepo.findOneOrFail({ id: issueId });
     const { assignees_id, state, ...restUpdateDto } = updateDto;
 
@@ -139,7 +138,7 @@ export class IssueService {
     }
 
     this.issueRepo.getEntityManager().flush();
-    return wrap(issue).toObject();
+    return issue;
   }
 
   async addComment(issueId: string, addCommentDto: AddCommentDto) {

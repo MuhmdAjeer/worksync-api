@@ -23,7 +23,7 @@ export class IssueDto extends BaseDto {
   title: string;
   description?: string;
   Project: ProjectDto;
-  issued_by: UserDto;
+  issued_by: string;
   priority?: IssuePriority;
   state?: IssueStateDto;
   labels?: IssueLabelDto[];
